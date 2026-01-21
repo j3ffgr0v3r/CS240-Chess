@@ -50,4 +50,23 @@ public class ChessMove {
         return String.format("%s -> %s", startPosition, endPosition);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (getClass() == obj.getClass()) {
+            if (this.getStartPosition().getRow() == ((ChessMove) obj).getStartPosition().getRow() && 
+                this.getStartPosition().getColumn() == ((ChessMove) obj).getStartPosition().getColumn() &&
+                this.getEndPosition().getRow() == ((ChessMove) obj).getEndPosition().getRow() && 
+                this.getEndPosition().getColumn() == ((ChessMove) obj).getEndPosition().getColumn() &&
+                this.getPromotionPiece() == ((ChessMove) obj).getPromotionPiece()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return startPosition.getRow() * startPosition.getColumn() * endPosition.getRow() * endPosition.getColumn() * 42;
+    }
+
 }
