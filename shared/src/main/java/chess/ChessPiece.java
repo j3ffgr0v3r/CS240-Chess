@@ -1,7 +1,11 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import chess.PieceMovesCalculator.Behavior;
+import static chess.PieceMovesCalculator.calculateMoves;
 
 /**
  * Represents a single chess piece
@@ -56,7 +60,7 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
 
         if (piece.getPieceType() == PieceType.BISHOP) {
-            return List.of(new ChessMove(new ChessPosition(5, 4), new ChessPosition(1, 0), null));
+            return calculateMoves(board, myPosition, new ArrayList<>(List.of(new Behavior(1,1,-1))));
         }
 
         return List.of();
