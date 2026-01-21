@@ -93,6 +93,20 @@ public class ChessPiece {
                 behaviors.add(new Behavior(-1,0,-1));
                 behaviors.add(new Behavior(0,1,-1));
                 behaviors.add(new Behavior(0,-1,-1));
+            } 
+            case KNIGHT -> {
+                behaviors.add(new Behavior(1,2,1));
+                behaviors.add(new Behavior(-1,2,1));
+                behaviors.add(new Behavior(1,-2,1));
+                behaviors.add(new Behavior(-1,-2,1));
+                behaviors.add(new Behavior(2,1,1));
+                behaviors.add(new Behavior(-2,1,1));
+                behaviors.add(new Behavior(2,-1,1));
+                behaviors.add(new Behavior(-2,-1,1));
+            }
+            case PAWN -> {
+                
+
             }
             default -> {
             }
