@@ -61,11 +61,41 @@ public class ChessPiece {
 
         List<Behavior> behaviors = new ArrayList<>();
 
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            behaviors.add(new Behavior(1,1,-1));
-            behaviors.add(new Behavior(-1,1,-1));
-            behaviors.add(new Behavior(1,-1,-1));
-            behaviors.add(new Behavior(-1,-1,-1));
+        if (null != piece.getPieceType()) switch (piece.getPieceType()) {
+            case KING -> {
+                behaviors.add(new Behavior(1,1,1));
+                behaviors.add(new Behavior(-1,1,1));
+                behaviors.add(new Behavior(1,-1,1));
+                behaviors.add(new Behavior(-1,-1,1));
+                behaviors.add(new Behavior(1,0,1));
+                behaviors.add(new Behavior(-1,0,1));
+                behaviors.add(new Behavior(0,1,1));
+                behaviors.add(new Behavior(0,-1,1));
+            }
+            case QUEEN -> {
+                behaviors.add(new Behavior(1,1,-1));
+                behaviors.add(new Behavior(-1,1,-1));
+                behaviors.add(new Behavior(1,-1,-1));
+                behaviors.add(new Behavior(-1,-1,-1));
+                behaviors.add(new Behavior(1,0,-1));
+                behaviors.add(new Behavior(-1,0,-1));
+                behaviors.add(new Behavior(0,1,-1));
+                behaviors.add(new Behavior(0,-1,-1));
+            }
+            case BISHOP -> {
+                behaviors.add(new Behavior(1,1,-1));
+                behaviors.add(new Behavior(-1,1,-1));
+                behaviors.add(new Behavior(1,-1,-1));
+                behaviors.add(new Behavior(-1,-1,-1));
+            }
+            case ROOK -> {
+                behaviors.add(new Behavior(1,0,-1));
+                behaviors.add(new Behavior(-1,0,-1));
+                behaviors.add(new Behavior(0,1,-1));
+                behaviors.add(new Behavior(0,-1,-1));
+            }
+            default -> {
+            }
         }
 
         return calculateMoves(board, myPosition, piece.getTeamColor(), behaviors);
