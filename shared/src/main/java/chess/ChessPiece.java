@@ -59,10 +59,15 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
 
+        List<Behavior> behaviors = new ArrayList<>();
+
         if (piece.getPieceType() == PieceType.BISHOP) {
-            return calculateMoves(board, myPosition, new ArrayList<>(List.of(new Behavior(1,1,-1))));
+            behaviors.add(new Behavior(1,1,-1));
+            behaviors.add(new Behavior(-1,1,-1));
+            behaviors.add(new Behavior(1,-1,-1));
+            behaviors.add(new Behavior(-1,-1,-1));
         }
 
-        return List.of();
+        return calculateMoves(board, myPosition, piece.getTeamColor(), behaviors);
     }
 }
