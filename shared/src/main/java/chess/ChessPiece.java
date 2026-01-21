@@ -100,4 +100,18 @@ public class ChessPiece {
 
         return calculateMoves(board, myPosition, piece.getTeamColor(), behaviors);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return getClass() == obj.getClass() && 
+                pieceColor == ((ChessPiece) obj).getTeamColor() &&
+                type == ((ChessPiece) obj).getPieceType();
+    }
+
+    @Override
+    public int hashCode() {
+        return pieceColor.hashCode() * type.hashCode();
+    }
+
+    
 }

@@ -66,7 +66,7 @@ public class ChessMove {
 
     @Override
     public int hashCode() {
-        return startPosition.getRow() * startPosition.getColumn() * endPosition.getRow() * endPosition.getColumn() * 42;
+        return startPosition.getRow() * startPosition.getColumn() * endPosition.getRow() * endPosition.getColumn() * (promotionPiece == null ? 1 : promotionPiece.hashCode());
     }
 
 }

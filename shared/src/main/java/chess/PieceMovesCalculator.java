@@ -13,7 +13,7 @@ public class PieceMovesCalculator {
 
 
         for(Behavior behavior: behaviors) {
-            for (int i = 1; behavior.distance == -1 || i < behavior.distance; i++) {
+            for (int i = 1; behavior.distance == -1 || i < behavior.distance + 1; i++) {
                 int newRow = position.getRow() + behavior.dir_row * i;
                 int newColumn = position.getColumn() + behavior.dir_col * i;
 
