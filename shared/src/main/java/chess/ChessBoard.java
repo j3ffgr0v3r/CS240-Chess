@@ -1,27 +1,39 @@
 package chess;
 
+import java.util.Arrays;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
+ * Note: You can add to this class, but you may not alter signature of the
+ * existing methods.
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    private ChessPiece[][] board = new ChessPiece[8][8];
+    private final ChessPiece[][] defaultBoard
+            = {
+                {new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK)},
+                {new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN)},
+                new ChessPiece[8],
+                new ChessPiece[8],
+                new ChessPiece[8],
+                new ChessPiece[8],
+                {new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN)},
+                {new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK)}
+            };
 
     public ChessBoard() {
-        
     }
 
     /**
      * Adds a chess piece to the chessboard
      *
      * @param position where to add the piece to
-     * @param piece    the piece to add
+     * @param piece the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board[position.getRow()-1][position.getColumn()-1] = piece;
+        board[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -32,34 +44,78 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRow()-1][position.getColumn()-1];
+        return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
-     * Sets the board to the default starting board
-     * (How the game of chess normally starts)
+     * Sets the board to the default starting board (How the game of chess
+     * normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        board = defaultBoard;
+    }
+
+    @Override
+    public String toString() {
+        String output = "";
+        for (ChessPiece[] row : board) {
+            output += "|";
+            for (ChessPiece space : row) {
+                if (space == null) {
+                    output += " ";
+                } else {
+                    switch (space.getPieceType()) {
+                        case KING -> {
+                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "K" : "k";
+                        }
+                        case QUEEN -> {
+                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "Q" : "q";
+                        }
+                        case BISHOP -> {
+                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "B" : "b";
+                        }
+                        case ROOK -> {
+                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "R" : "r";
+                        } 
+                        case KNIGHT -> {
+                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "N" : "n";
+                        }
+                        case PAWN -> {
+                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "P" : "p";
+                        }
+                        default -> {
+                        }
+                    }
+                }
+                output += "|";
+                }
+            output += "\n";
+            }
+        return output;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (getClass() == obj.getClass()) {
-            int x = 0;
+            int x = 1;
             for (ChessPiece[] row : board) {
-                int y = 0;
+                int y = 1;
                 for (ChessPiece space : row) {
-                    if (space.equals(((ChessBoard) obj).getPiece(new ChessPosition(x, y)))) {
+                    if (!((space == null && ((ChessBoard) obj).getPiece(new ChessPosition(x, y)) == null) || (space != null && space.equals(((ChessBoard) obj).getPiece(new ChessPosition(x, y)))))) {
                         return false;
                     }
                     y += 1;
                 }
-                x+=1;
+                x += 1;
             }
             return true;
         }
         return false;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
+    }
+
 }
