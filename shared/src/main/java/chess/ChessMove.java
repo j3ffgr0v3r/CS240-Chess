@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 import chess.ChessPiece.PieceType;
 
 /**
@@ -66,7 +68,7 @@ public class ChessMove {
 
     @Override
     public int hashCode() {
-        return startPosition.getRow() * startPosition.getColumn() * endPosition.getRow() * endPosition.getColumn() * (promotionPiece == null ? 1 : promotionPiece.hashCode());
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 
 }
