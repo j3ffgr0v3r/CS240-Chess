@@ -42,4 +42,24 @@ public class ChessBoard {
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (getClass() == obj.getClass()) {
+            int x = 0;
+            for (ChessPiece[] row : board) {
+                int y = 0;
+                for (ChessPiece space : row) {
+                    if (space.equals(((ChessBoard) obj).getPiece(new ChessPosition(x, y)))) {
+                        return false;
+                    }
+                    y += 1;
+                }
+                x+=1;
+            }
+            return true;
+        }
+        return false;
+    }
+    
 }
