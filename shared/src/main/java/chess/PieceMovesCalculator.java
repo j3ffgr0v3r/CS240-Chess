@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,6 +11,13 @@ public class PieceMovesCalculator {
 
     public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor color, List<Behavior> behaviors) {
         List<ChessMove> moves = new ArrayList<>();
+
+        List<ChessPiece.PieceType> promotions = new ArrayList<>(Arrays.asList(
+                    ChessPiece.PieceType.QUEEN,
+                    ChessPiece.PieceType.BISHOP,
+                    ChessPiece.PieceType.KNIGHT,
+                    ChessPiece.PieceType.ROOK
+        ));
 
 
         for(Behavior behavior: behaviors) {
@@ -25,7 +33,26 @@ public class PieceMovesCalculator {
                 ChessPiece tile = board.getPiece(newPosition);
 
                 if (tile == null || tile.getTeamColor() != color) {
-                    moves.add(new ChessMove(position, newPosition, null));
+                    // Split Behavior (Pawn)
+                    if (board.getPiece(position).getPieceType() == ChessPiece.PieceType.PAWN ) {
+                        if ((position.getColumn() == newColumn && tile == null) ||
+                            (position.getColumn() != newColumn && tile != null)) {
+
+                            // Promotion
+                            if(newRow == 1 || newRow == 8) {
+                                for (ChessPiece.PieceType promotion : promotions) {
+                                    moves.add(new ChessMove(position, newPosition, promotion));
+                                }
+                            } else {
+                                moves.add(new ChessMove(position, newPosition, null));
+                            }
+                        }
+
+                    } else {
+                        // Attack and move together
+                        moves.add(new ChessMove(position, newPosition, null));
+                    }
+                    // Attacking is last move
                     if (tile != null && tile.getTeamColor() != color) {
                         break;
                     }

@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -58,6 +59,8 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
 
         List<Behavior> behaviors = new ArrayList<>();
 
@@ -105,7 +108,30 @@ public class ChessPiece {
                 behaviors.add(new Behavior(-2,-1,1));
             }
             case PAWN -> {
-                
+                // White goes up, black goes down (this sounds very racist...)
+                int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
+
+                // First move
+                if ((pieceColor == ChessGame.TeamColor.WHITE && row == 2)||
+                    (pieceColor == ChessGame.TeamColor.BLACK && row == 7)) {
+                    behaviors.add(new Behavior(direction,0,2));
+                } else {
+                // Basic move
+                    behaviors.add(new Behavior(direction,0,1));
+                }
+
+                // Attack
+                int scope_row = row + direction;
+                int scope_col;
+                for (int side : Arrays.asList(-1,1)) {
+                    scope_col = col + side;
+                    if (scope_row >= 1 && scope_row <= 8 && scope_col >= 1 && scope_col <= 8) {
+                        ChessPiece target = board.getPiece(new ChessPosition(scope_row, scope_col));
+                        if (target != null && target.getTeamColor() != pieceColor) {
+                            behaviors.add(new Behavior(direction,side,1));
+                        }
+                    }
+                }
 
             }
             default -> {
