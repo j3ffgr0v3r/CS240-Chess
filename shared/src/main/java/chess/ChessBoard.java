@@ -3,13 +3,15 @@ package chess;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import chess.ChessPiece.PieceType;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
  * Note: You can add to this class, but you may not alter signature of the
  * existing methods.
  */
-public class ChessBoard implements Iterable<ChessPiece> {
+public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
 
     private ChessPiece[][] board = new ChessPiece[8][8];
     private final ChessPiece[][] defaultBoard
@@ -46,6 +48,19 @@ public class ChessBoard implements Iterable<ChessPiece> {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return board[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    public void movePiece(ChessMove move) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece piece = getPiece(startPosition);
+
+        addPiece(endPosition, piece);
+        addPiece(startPosition, null);
+
+        if (piece.getPieceType() == PieceType.PAWN) {
+            piece.promotePiece(move.getPromotionPiece());
+        }
     }
 
     /**
@@ -122,6 +137,18 @@ public class ChessBoard implements Iterable<ChessPiece> {
                 return retValue;
             }
         };
+    }
+
+    @Override
+    @SuppressWarnings("CloneDeclaresCloneNotSupported")
+    protected ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+            clone.board = Arrays.copyOf(board, board.length);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
