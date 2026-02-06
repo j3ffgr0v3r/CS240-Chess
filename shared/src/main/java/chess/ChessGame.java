@@ -67,7 +67,7 @@ public class ChessGame implements Cloneable {
             hypotheticalChessGame = this.clone();
             hypotheticalChessGame.board.movePiece(move);
 
-            if (hypotheticalChessGame.isInCheck(teamTurn)) {
+            if (hypotheticalChessGame.isInCheck(piece.getTeamColor())) {
                 output.remove(move);
             }
         }
