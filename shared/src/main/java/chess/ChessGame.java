@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -58,19 +59,20 @@ public class ChessGame implements Cloneable {
             return null;
         }
 
-        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> output = new ArrayList<>(potentialMoves);
 
         ChessGame hypotheticalChessGame;
-        for(ChessMove move : moves) {
+        for(ChessMove move : potentialMoves) {
             hypotheticalChessGame = this.clone();
             hypotheticalChessGame.board.movePiece(move);
 
             if (hypotheticalChessGame.isInCheck(teamTurn)) {
-                moves.remove(move);
+                output.remove(move);
             }
         }
 
-        return moves;
+        return output;
     }
 
     /**
@@ -151,7 +153,7 @@ public class ChessGame implements Cloneable {
         int pos = 0;
         
         for(ChessPiece piece : board) {
-            if(piece != null && piece.getTeamColor() == teamColor && validMoves(new ChessPosition(pos/8+1, pos%8+1)) != null) {
+            if(piece != null && piece.getTeamColor() == teamColor && validMoves(new ChessPosition(pos/8+1, pos%8+1)).isEmpty()) {
                 return true;
             }
             pos ++;
