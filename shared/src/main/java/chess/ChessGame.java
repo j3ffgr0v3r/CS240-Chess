@@ -106,10 +106,30 @@ public class ChessGame implements Cloneable {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        ChessPosition kingPosition = null;
+
+        // Find King
         int pos = 0;
         for(ChessPiece piece : board) {
-            if(piece != null && piece.getTeamColor() == teamColor) {
-                piece.pieceMoves(board, new ChessPosition(pos/8, pos%8));
+            if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType()==ChessPiece.PieceType.KING) {
+                kingPosition = new ChessPosition(pos/8+1, pos%8+1);
+                break;
+            }
+            pos ++;
+        }
+        if (kingPosition == null) {
+            throw new RuntimeException("Attempted to find " + teamColor + " king, but could not.");
+        }
+
+        // See if any piece can "kill" him
+        pos = 0;
+        for(ChessPiece piece : board) {
+            if(piece != null && piece.getTeamColor() != teamColor) {
+                for (ChessMove move : piece.pieceMoves(board, new ChessPosition(pos/8+1, pos%8+1))) {
+                    if (move.getEndPosition() == kingPosition) {
+                        return true;
+                    }
+                }
             }
             pos ++;
         }
