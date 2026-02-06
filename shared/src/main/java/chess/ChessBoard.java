@@ -138,7 +138,10 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
     protected ChessBoard clone() {
         try {
             ChessBoard clone = (ChessBoard) super.clone();
-            clone.board = Arrays.copyOf(board, board.length);
+            clone.board = new ChessPiece[8][8];
+            for (int i =0; i<board.length; i++) {
+                clone.board[i] = Arrays.copyOf(board[i], board[i].length);
+            }
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
