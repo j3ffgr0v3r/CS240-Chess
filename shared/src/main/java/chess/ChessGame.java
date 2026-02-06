@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -129,7 +130,7 @@ public class ChessGame implements Cloneable {
         for(ChessPiece piece : board) {
             if(piece != null && piece.getTeamColor() != teamColor) {
                 for (ChessMove move : piece.pieceMoves(board, new ChessPosition(pos/8+1, pos%8+1))) {
-                    if (move.getEndPosition() == kingPosition) {
+                    if (move.getEndPosition().equals(kingPosition)) {
                         return true;
                     }
                 }
