@@ -57,10 +57,6 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
 
         addPiece(endPosition, piece);
         addPiece(startPosition, null);
-
-        if (piece.getPieceType() == PieceType.PAWN) {
-            piece.promotePiece(move.getPromotionPiece());
-        }
     }
 
     /**

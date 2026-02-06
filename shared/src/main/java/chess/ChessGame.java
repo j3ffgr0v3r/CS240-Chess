@@ -81,14 +81,22 @@ public class ChessGame implements Cloneable {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
+        ChessPiece piece = board.getPiece(startPosition);
 
         if (board.getPiece(startPosition).getTeamColor() != teamTurn) {
             throw new InvalidMoveException("It is not your turn, cheater!");
-        } else if (!validMoves(startPosition).contains(move)) {
+        } else if (!board.getPiece(startPosition).pieceMoves(board, startPosition).contains(move)) {
             throw new InvalidMoveException("You can't move there, cheater!");
         }
 
         board.movePiece(move);
+
+        // Promotion
+        if (move.getPromotionPiece() != null) {
+            piece.promotePiece(move.getPromotionPiece());
+        }
+
+        teamTurn = (teamTurn == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE;
     }
 
     /**
