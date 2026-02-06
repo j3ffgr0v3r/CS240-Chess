@@ -8,7 +8,7 @@ import java.util.Collection;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable {
 
     private TeamColor teamTurn;
     private ChessBoard board;
@@ -64,7 +64,7 @@ public class ChessGame {
             } catch (InvalidMoveException e) {
                 throw new AssertionError(e);
             }
-            
+
             if (hypotheticalChessGame.isInCheck((teamTurn == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE)) {
                 moves.remove(move);
             }
@@ -108,6 +108,26 @@ public class ChessGame {
         return false;
     }
 
+
+    /**
+     * Determines if the given team has any valid moves
+     *
+     * @param teamColor which team to check for checkmate
+     * @return True if the specified team can make any valid move
+     */
+    public boolean hasValidMoves(TeamColor teamColor) {
+        int pos = 0;
+        
+        for(ChessPiece piece : board) {
+            if(piece != null && piece.getTeamColor() == teamColor && validMoves(new ChessPosition(pos/8, pos%8)) != null) {
+                return false;
+            }
+            pos ++;
+        }
+        return true;
+    }
+
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -115,7 +135,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return isInCheck(teamColor) && !hasValidMoves(teamColor);
+
     }
 
     /**
@@ -126,7 +147,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return !isInCheck(teamColor) && !hasValidMoves(teamColor);
     }
 
     /**
