@@ -51,7 +51,26 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        if (board.getPiece(startPosition) == null) {
+            return null;
+        }
+
+        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+
+        for(ChessMove move : moves) {
+            ChessGame hypotheticalChessGame = this.clone();
+            try {
+                hypotheticalChessGame.makeMove(move);
+            } catch (InvalidMoveException e) {
+                throw new AssertionError(e);
+            }
+            
+            if (hypotheticalChessGame.isInCheck((teamTurn == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE)) {
+                moves.remove(move);
+            }
+        }
+
+        return moves;
     }
 
     /**
@@ -133,6 +152,18 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    @Override
+    @SuppressWarnings("CloneDeclaresCloneNotSupported")
+    protected ChessGame clone() {
+        try {
+            ChessGame clone = (ChessGame) super.clone();
+            clone.board = this.board.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
