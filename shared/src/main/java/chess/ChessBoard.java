@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -92,6 +93,34 @@ public class ChessBoard {
             output += "\n";
             }
         return output;
+    }
+
+    public Iterator<ChessPiece> iterator() {
+        return new Iterator<ChessPiece>() {
+            // Start stepping through the array from the beginning
+            private int next = 0;
+            private int row = 0;
+            private int col = 0;
+
+            @Override
+            public boolean hasNext() {
+                // Check if a current element is the last in the array
+                return (next <= board.length*board[0].length - 1);
+            }
+
+            @Override
+            public ChessPiece next() {
+                // Get the value to be returned
+                ChessPiece retValue = board[row][col];
+
+                // Increment the counter in preparation for the next call
+                next += 1;
+                row = next / 8;
+                col = next % 8;
+
+                return retValue;
+            }
+        };
     }
 
     @Override
