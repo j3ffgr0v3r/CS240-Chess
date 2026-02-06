@@ -110,6 +110,19 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && getClass() == obj.getClass() && 
+                teamTurn == ((ChessGame) obj).getTeamTurn() &&
+                board == ((ChessGame) obj).getBoard();
+    }
+
+    @Override
+    public int hashCode() {
+        return board.hashCode() * teamTurn.hashCode();
+    }
+
 }
