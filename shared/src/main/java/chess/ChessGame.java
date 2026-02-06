@@ -154,7 +154,7 @@ public class ChessGame implements Cloneable {
         int pos = 0;
         
         for(ChessPiece piece : board) {
-            if(piece != null && piece.getTeamColor() == teamColor && validMoves(new ChessPosition(pos/8+1, pos%8+1)).isEmpty()) {
+            if(piece != null && piece.getTeamColor() == teamColor && !validMoves(new ChessPosition(pos/8+1, pos%8+1)).isEmpty()) {
                 return true;
             }
             pos ++;
