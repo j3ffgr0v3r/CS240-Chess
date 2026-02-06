@@ -215,12 +215,12 @@ public class ChessGame implements Cloneable {
     public boolean equals(Object obj) {
         return obj != null && getClass() == obj.getClass() && 
                 teamTurn == ((ChessGame) obj).getTeamTurn() &&
-                board == ((ChessGame) obj).getBoard();
+                ((ChessGame) obj).getBoard().equals(board);
     }
 
     @Override
     public int hashCode() {
-        return board.hashCode() * teamTurn.hashCode();
+        return Objects.hash(board, teamTurn);
     }
 
 }
