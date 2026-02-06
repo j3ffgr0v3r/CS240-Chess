@@ -15,8 +15,17 @@ public class ChessGame implements Cloneable {
     private TeamColor teamTurn;
     private ChessBoard board;
 
+    private boolean whiteCanCastleKingside;
+    private boolean whiteCanCastleQueenside;
+    private boolean blackCanCastleKingside;
+    private boolean blackCanCastleQueenside;
+
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
+        whiteCanCastleKingside = true;
+        whiteCanCastleQueenside = true;
+        blackCanCastleKingside = true;
+        blackCanCastleQueenside = true;
         board = new ChessBoard();
         board.resetBoard();
     }
@@ -103,6 +112,42 @@ public class ChessGame implements Cloneable {
         }
 
         teamTurn = (teamTurn == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE;
+    }
+
+    /**
+     * Checks if player has moved King or Rook from starting position, and if so, flags player ineligible for castling
+     *
+     * @param teamColor which team to check for eligibility to castle
+     * @return True if the specified team can castle
+     */
+    public void updateCastling(ChessMove move) {
+        ChessPiece piece = board.getPiece(move.getEndPosition());
+        TeamColor color = piece.getTeamColor();
+
+        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            if (color == TeamColor.WHITE) {
+                whiteCanCastleKingside = false;
+                whiteCanCastleQueenside = false;
+            } else {
+                blackCanCastleKingside = false;
+                blackCanCastleQueenside = false;
+            }
+        } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+            int side = move.getStartPosition().getColumn();
+            if (color == TeamColor.WHITE) {
+                if (side == 1) {
+                    whiteCanCastleQueenside = false;
+                } else if (side == 8){
+                    whiteCanCastleKingside = false;
+                }
+            } else {
+                if (side == 1) {
+                    blackCanCastleKingside = false;
+                } else if (side == 8){
+                    blackCanCastleQueenside = false;
+                }
+            }
+        }
     }
 
     /**
