@@ -155,7 +155,7 @@ public class ChessGame implements Cloneable {
             }
             pos ++;
         }
-        return true;
+        return false;
     }
 
 
