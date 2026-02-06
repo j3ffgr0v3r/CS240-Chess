@@ -52,10 +52,8 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
 
     public void movePiece(ChessMove move) {
         ChessPosition startPosition = move.getStartPosition();
-        ChessPosition endPosition = move.getEndPosition();
-        ChessPiece piece = getPiece(startPosition);
 
-        addPiece(endPosition, piece);
+        addPiece(move.getEndPosition(), getPiece(startPosition));
         addPiece(startPosition, null);
     }
 
