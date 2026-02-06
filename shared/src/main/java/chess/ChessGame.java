@@ -51,21 +51,20 @@ public class ChessGame implements Cloneable {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if (board.getPiece(startPosition) == null) {
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null) {
             return null;
         }
 
-        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
 
+        ChessGame hypotheticalChessGame;
         for(ChessMove move : moves) {
-            ChessGame hypotheticalChessGame = this.clone();
-            try {
-                hypotheticalChessGame.makeMove(move);
-            } catch (InvalidMoveException e) {
-                throw new AssertionError(e);
-            }
+            hypotheticalChessGame = this.clone();
+            hypotheticalChessGame.board.movePiece(move);
 
-            if (hypotheticalChessGame.isInCheck((teamTurn == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE)) {
+            if (hypotheticalChessGame.isInCheck(teamTurn)) {
                 moves.remove(move);
             }
         }
@@ -83,11 +82,15 @@ public class ChessGame implements Cloneable {
         ChessPosition startPosition = move.getStartPosition();
         ChessPiece piece = board.getPiece(startPosition);
 
-        if (board.getPiece(startPosition).getTeamColor() != teamTurn) {
-            throw new InvalidMoveException("It is not your turn, cheater!");
-        } else if (!board.getPiece(startPosition).pieceMoves(board, startPosition).contains(move)) {
-            throw new InvalidMoveException("You can't move there, cheater!");
+        if (piece == null) {
+            throw new InvalidMoveException("There is no piece there...");
         }
+        if (piece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("It is not your turn, cheater!");
+        } 
+        if (!validMoves(startPosition).contains(move)) {
+            throw new InvalidMoveException("You can't move there, cheater!");
+        } 
 
         board.movePiece(move);
 
