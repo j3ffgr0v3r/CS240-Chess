@@ -124,7 +124,8 @@ public class ChessGame implements Cloneable {
             pos ++;
         }
         if (kingPosition == null) {
-            throw new RuntimeException("Attempted to find " + teamColor + " king, but could not.");
+            // King not found... somehow. So I guess they're... not in check???
+            return false;
         }
 
         // See if any piece can "kill" him
