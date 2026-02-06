@@ -9,7 +9,7 @@ import java.util.Iterator;
  * Note: You can add to this class, but you may not alter signature of the
  * existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Iterable<ChessPiece> {
 
     private ChessPiece[][] board = new ChessPiece[8][8];
     private final ChessPiece[][] defaultBoard
@@ -95,6 +95,7 @@ public class ChessBoard {
         return output;
     }
 
+    @Override
     public Iterator<ChessPiece> iterator() {
         return new Iterator<ChessPiece>() {
             // Start stepping through the array from the beginning
