@@ -17,10 +17,8 @@ public class ChessGame implements Cloneable {
     private TeamColor teamTurn;
     private ChessBoard board;
 
-    
-
-    private final ChessMove whiteCastleKingside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 3), null);
-    private final ChessMove whiteCastleQueenside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 7), null);
+    private final ChessMove whiteCastleKingside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 7), null);
+    private final ChessMove whiteCastleQueenside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 3), null);
     private final ChessMove blackCastleKingside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(8, 7), null);
     private final ChessMove blackCastleQueenside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(8, 3), null);
 
@@ -74,18 +72,18 @@ public class ChessGame implements Cloneable {
             return null;
         }
 
+        // Get all potential moves
         Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
-        Collection<ChessMove> output = new ArrayList<>(potentialMoves);
+        if (piece.getPieceType() == ChessPiece.PieceType.KING && !isInCheck(piece.getTeamColor())) {
+            potentialMoves.addAll(castlingMoves(startPosition));
+        }
 
-        
+        // Remove invalid ones
+        Collection<ChessMove> output = new ArrayList<>(potentialMoves);
         for(ChessMove move : potentialMoves) {
             if (putsIntoCheck(piece.getTeamColor(), move)) {
                 output.remove(move);
             }
-        }
-
-        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-            output.addAll(castlingMoves(startPosition));
         }
 
         return output;
@@ -152,7 +150,7 @@ public class ChessGame implements Cloneable {
         for(int i = 0; i < 4 ;i++){
             castleMove = castleMoves.get(i);
             side = (i < 2)?1:8;
-            direction = (i % 2 == 0)?-1:1;
+            direction = (i % 2 == 0)?1:-1;
 
             if (canCastleList.get(i) && board.getPiece(new ChessPosition(side, startPosition.getColumn()+direction)) == null && 
                                     board.getPiece(new ChessPosition(side, startPosition.getColumn()+(direction*2))) == null &&
@@ -183,7 +181,7 @@ public class ChessGame implements Cloneable {
                 canCastleList.set(2, false);
                 canCastleList.set(3, false);
             }
-        } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+        } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
             int side = move.getStartPosition().getColumn();
             if (color == TeamColor.WHITE) {
                 if (side == 1) {
