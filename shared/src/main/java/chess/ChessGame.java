@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import chess.ChessPiece.PieceType;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -25,11 +27,14 @@ public class ChessGame implements Cloneable {
     private final List<ChessMove> castleMoves = new ArrayList<>(Arrays.asList(whiteCastleKingside, whiteCastleQueenside, blackCastleKingside, blackCastleQueenside));
     private final List<Boolean> canCastleList = new ArrayList<>(Arrays.asList(true, true, true, true));
 
+    private List<ChessMove> enPassantMoves = new ArrayList<>();
+
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
         for (int i = 0; i < 4; i++) {
             canCastleList.set(i, true);
         }
+        enPassantMoves = new ArrayList<>();
         board = new ChessBoard();
         board.resetBoard();
     }
@@ -74,10 +79,13 @@ public class ChessGame implements Cloneable {
         
         // Get all potential moves
         Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
+
         updateCastling();
         if (piece.getPieceType() == ChessPiece.PieceType.KING && !isInCheck(piece.getTeamColor())) {
             potentialMoves.addAll(castlingMoves(startPosition));
         }
+
+        potentialMoves.addAll(enPassantMoves);
 
         // Remove invalid ones
         Collection<ChessMove> output = new ArrayList<>(potentialMoves);
@@ -120,6 +128,33 @@ public class ChessGame implements Cloneable {
             board.movePiece(rookResponse);
         }
 
+
+        // Manually kills the opposing pawn for En Passant
+        if (enPassantMoves.contains(move)) {
+            board.addPiece(new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn()), null);
+        }
+
+        enPassantMoves.clear();
+
+        // Adds En Passant move to queue for next players turn
+        // Triggers if pawn performs double move
+        for (int row = 4; row < 6; row++) {
+            if (piece.getPieceType() == PieceType.PAWN && move.getStartPosition().getRow()==((row == 4)?2:7) && move.getEndPosition().getRow()==row) {
+            // Checks if enemy pawns are at the side of pawn
+            TeamColor target = piece.getTeamColor();
+            TeamColor attacker = (target == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE;
+
+            for (int i = -1; i < 2; i += 2) {
+                ChessPosition neighborPosition = new ChessPosition(row, move.getEndPosition().getColumn()+i);
+                ChessPiece neighborPiece = board.getPiece(neighborPosition);
+                if (neighborPiece != null && neighborPiece.getTeamColor() == attacker && neighborPiece.getPieceType() == PieceType.PAWN) {
+                    enPassantMoves.add(new ChessMove(neighborPosition, new ChessPosition(((row == 4)?3:6), move.getEndPosition().getColumn()), null));
+                }
+            }
+        }
+        }
+        
+
         // Promotion
         if (move.getPromotionPiece() != null) {
             piece.promotePiece(move.getPromotionPiece());
@@ -127,6 +162,7 @@ public class ChessGame implements Cloneable {
 
         teamTurn = (teamTurn == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE;
     }
+
 
     /**
      * Returns additional castling moves for the piece at the given location, if applicable
