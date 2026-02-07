@@ -71,12 +71,9 @@ public class ChessGame implements Cloneable {
         Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> output = new ArrayList<>(potentialMoves);
 
-        ChessGame hypotheticalChessGame;
+        
         for(ChessMove move : potentialMoves) {
-            hypotheticalChessGame = this.clone();
-            hypotheticalChessGame.board.movePiece(move);
-
-            if (hypotheticalChessGame.isInCheck(piece.getTeamColor())) {
+            if (putsIntoCheck(piece.getTeamColor(), move)) {
                 output.remove(move);
             }
         }
@@ -148,6 +145,21 @@ public class ChessGame implements Cloneable {
                 }
             }
         }
+    }
+
+    /**
+     * Determines if a chess move would put the given teams king into check
+     *
+     * @param teamColor which team to check for hypothetical check
+     * @return True if the specified team would be in check
+     */
+    public boolean putsIntoCheck(TeamColor teamColor, ChessMove move) {
+        ChessGame hypotheticalChessGame;
+        
+        hypotheticalChessGame = this.clone();
+        hypotheticalChessGame.board.movePiece(move);
+
+        return hypotheticalChessGame.isInCheck(teamColor);
     }
 
     /**
