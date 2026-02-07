@@ -17,25 +17,21 @@ public class ChessGame implements Cloneable {
     private TeamColor teamTurn;
     private ChessBoard board;
 
-    private boolean whiteCanCastleKingside;
-    private boolean whiteCanCastleQueenside;
-    private boolean blackCanCastleKingside;
-    private boolean blackCanCastleQueenside;
+    
 
     private final ChessMove whiteCastleKingside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 3), null);
     private final ChessMove whiteCastleQueenside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 7), null);
-    private final ChessMove blackCastleKingside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(1, 7), null);
-    private final ChessMove blackCastleQueenside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(1, 3), null);
+    private final ChessMove blackCastleKingside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(8, 7), null);
+    private final ChessMove blackCastleQueenside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(8, 3), null);
 
     private final List<ChessMove> castleMoves = new ArrayList<>(Arrays.asList(whiteCastleKingside, whiteCastleQueenside, blackCastleKingside, blackCastleQueenside));
+    private final List<Boolean> canCastleList = new ArrayList<>(Arrays.asList(true, true, true, true));
 
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
-        whiteCanCastleKingside = true;
-        whiteCanCastleQueenside = true;
-        blackCanCastleKingside = true;
-        blackCanCastleQueenside = true;
-
+        for (int i = 0; i < 4; i++) {
+            canCastleList.set(i, true);
+        }
         board = new ChessBoard();
         board.resetBoard();
     }
@@ -150,23 +146,19 @@ public class ChessGame implements Cloneable {
         Collection<ChessMove> output = new ArrayList<>();
         TeamColor color = piece.getTeamColor();
 
+        int direction;
+        int side;
+        ChessMove castleMove;
+        for(int i = 0; i < 4 ;i++){
+            castleMove = castleMoves.get(i);
+            side = (i < 2)?1:8;
+            direction = (i % 2 == 0)?-1:1;
 
-        if (color == TeamColor.WHITE) {
-            if (whiteCanCastleKingside && board.getPiece(new ChessPosition(startPosition.getRow(), startPosition.getColumn()+1)) == null && 
-                                          board.getPiece(new ChessPosition(startPosition.getRow(), startPosition.getColumn()+2)) == null &&
-                                          !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()+1), null)) &&
-                                          !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()+2), null))) {
-                output.add(whiteCastleKingside);
-            }
-            if (whiteCanCastleQueenside) {
-                output.add(whiteCastleQueenside);
-            }
-        } else {
-            if (blackCanCastleKingside) {
-                output.add(new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()+2), null));
-            }
-            if (blackCanCastleQueenside) {
-                output.add(new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()-2), null));
+            if (canCastleList.get(i) && board.getPiece(new ChessPosition(side, startPosition.getColumn()+direction)) == null && 
+                                    board.getPiece(new ChessPosition(side, startPosition.getColumn()+(direction*2))) == null &&
+                                    !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(side, startPosition.getColumn()+direction), null)) &&
+                                    !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(side, startPosition.getColumn()+(direction*2)), null))) {
+                output.add(castleMove);
             }
         }
 
@@ -185,25 +177,25 @@ public class ChessGame implements Cloneable {
 
         if (piece.getPieceType() == ChessPiece.PieceType.KING) {
             if (color == TeamColor.WHITE) {
-                whiteCanCastleKingside = false;
-                whiteCanCastleQueenside = false;
+                canCastleList.set(0, false);
+                canCastleList.set(1, false);
             } else {
-                blackCanCastleKingside = false;
-                blackCanCastleQueenside = false;
+                canCastleList.set(2, false);
+                canCastleList.set(3, false);
             }
         } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
             int side = move.getStartPosition().getColumn();
             if (color == TeamColor.WHITE) {
                 if (side == 1) {
-                    whiteCanCastleQueenside = false;
+                    canCastleList.set(1, false);
                 } else if (side == 8){
-                    whiteCanCastleKingside = false;
+                    canCastleList.set(0, false);
                 }
             } else {
                 if (side == 1) {
-                    blackCanCastleKingside = false;
+                    canCastleList.set(3, false);
                 } else if (side == 8){
-                    blackCanCastleQueenside = false;
+                    canCastleList.set(2, false);
                 }
             }
         }
