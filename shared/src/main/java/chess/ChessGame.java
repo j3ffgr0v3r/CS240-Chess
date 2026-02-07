@@ -1,7 +1,9 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -20,12 +22,20 @@ public class ChessGame implements Cloneable {
     private boolean blackCanCastleKingside;
     private boolean blackCanCastleQueenside;
 
+    private final ChessMove whiteCastleKingside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 3), null);
+    private final ChessMove whiteCastleQueenside = new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 7), null);
+    private final ChessMove blackCastleKingside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(1, 7), null);
+    private final ChessMove blackCastleQueenside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(1, 3), null);
+
+    private final List<ChessMove> castleMoves = new ArrayList<>(Arrays.asList(whiteCastleKingside, whiteCastleQueenside, blackCastleKingside, blackCastleQueenside));
+
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
         whiteCanCastleKingside = true;
         whiteCanCastleQueenside = true;
         blackCanCastleKingside = true;
         blackCanCastleQueenside = true;
+
         board = new ChessBoard();
         board.resetBoard();
     }
@@ -78,6 +88,10 @@ public class ChessGame implements Cloneable {
             }
         }
 
+        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            output.addAll(castlingMoves(startPosition));
+        }
+
         return output;
     }
 
@@ -102,6 +116,15 @@ public class ChessGame implements Cloneable {
         } 
 
         board.movePiece(move);
+        // Respond to castling by moving rook
+        if (castleMoves.contains(move)) {
+            ChessPosition endPosition = move.getEndPosition();
+            int rookDirection = (endPosition.getColumn() - startPosition.getColumn())/2;
+            ChessPosition rook = new ChessPosition(endPosition.getRow(), (rookDirection == 1)?8:1);
+            ChessMove rookResponse = new ChessMove(rook, new ChessPosition(endPosition.getRow(), endPosition.getColumn() + ((rookDirection == 1)?-1:1)), null);
+            board.movePiece(rookResponse);
+        }
+        updateCastling(move);
 
         // Promotion
         if (move.getPromotionPiece() != null) {
@@ -109,6 +132,45 @@ public class ChessGame implements Cloneable {
         }
 
         teamTurn = (teamTurn == TeamColor.WHITE)?TeamColor.BLACK:TeamColor.WHITE;
+    }
+
+    /**
+     * Returns additional castling moves for the piece at the given location, if applicable
+     *
+     * @param startPosition the piece to get valid moves for
+     * @return Set of valid castling moves for requested piece, or null if none
+     */
+    public Collection<ChessMove> castlingMoves(ChessPosition startPosition) {
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null || piece.getPieceType() != ChessPiece.PieceType.KING) {
+            return null;
+        }
+
+        Collection<ChessMove> output = new ArrayList<>();
+        TeamColor color = piece.getTeamColor();
+
+
+        if (color == TeamColor.WHITE) {
+            if (whiteCanCastleKingside && board.getPiece(new ChessPosition(startPosition.getRow(), startPosition.getColumn()+1)) == null && 
+                                          board.getPiece(new ChessPosition(startPosition.getRow(), startPosition.getColumn()+2)) == null &&
+                                          !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()+1), null)) &&
+                                          !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()+2), null))) {
+                output.add(whiteCastleKingside);
+            }
+            if (whiteCanCastleQueenside) {
+                output.add(whiteCastleQueenside);
+            }
+        } else {
+            if (blackCanCastleKingside) {
+                output.add(new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()+2), null));
+            }
+            if (blackCanCastleQueenside) {
+                output.add(new ChessMove(startPosition, new ChessPosition(startPosition.getRow(), startPosition.getColumn()-2), null));
+            }
+        }
+
+        return output;
     }
 
     /**
