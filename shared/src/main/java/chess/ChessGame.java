@@ -71,9 +71,10 @@ public class ChessGame implements Cloneable {
         if (piece == null) {
             return null;
         }
-
+        
         // Get all potential moves
         Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
+        updateCastling();
         if (piece.getPieceType() == ChessPiece.PieceType.KING && !isInCheck(piece.getTeamColor())) {
             potentialMoves.addAll(castlingMoves(startPosition));
         }
@@ -118,7 +119,6 @@ public class ChessGame implements Cloneable {
             ChessMove rookResponse = new ChessMove(rook, new ChessPosition(endPosition.getRow(), endPosition.getColumn() + ((rookDirection == 1)?-1:1)), null);
             board.movePiece(rookResponse);
         }
-        updateCastling(move);
 
         // Promotion
         if (move.getPromotionPiece() != null) {
@@ -164,37 +164,34 @@ public class ChessGame implements Cloneable {
     }
 
     /**
-     * Checks if player has moved King or Rook from starting position, and if so, flags player ineligible for castling
+     * Updates which castling moves are no longer eligible
      *
-     * @param teamColor which team to check for eligibility to castle
-     * @return True if the specified team can castle
      */
-    public void updateCastling(ChessMove move) {
-        ChessPiece piece = board.getPiece(move.getEndPosition());
-        TeamColor color = piece.getTeamColor();
+    public void updateCastling() {
+        int row;
+        int col;
+        ChessPiece piece;
 
-        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-            if (color == TeamColor.WHITE) {
-                canCastleList.set(0, false);
-                canCastleList.set(1, false);
-            } else {
-                canCastleList.set(2, false);
-                canCastleList.set(3, false);
+        // Rooks moved
+        for(int i = 0; i < 4 ;i++){
+            row = (i < 2)?1:8;
+            col = (i % 2 == 0)?8:1;
+            piece = board.getPiece(new ChessPosition(row, col));
+
+            if (piece == null || piece.getPieceType() != ChessPiece.PieceType.ROOK) {
+                canCastleList.set(i, false);
             }
-        } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
-            int side = move.getStartPosition().getColumn();
-            if (color == TeamColor.WHITE) {
-                if (side == 1) {
-                    canCastleList.set(1, false);
-                } else if (side == 8){
-                    canCastleList.set(0, false);
-                }
-            } else {
-                if (side == 1) {
-                    canCastleList.set(3, false);
-                } else if (side == 8){
-                    canCastleList.set(2, false);
-                }
+        }
+        
+        // King moved
+        for(int i = 0; i < 2 ;i++){
+            row = (i == 0)?1:8;
+            col = 5;
+            piece = board.getPiece(new ChessPosition(row, col));
+
+            if (piece == null || piece.getPieceType() != ChessPiece.PieceType.KING) {
+                canCastleList.set(((i==0)?0:2), false);
+                canCastleList.set(((i==0)?1:3), false);
             }
         }
     }
