@@ -1,6 +1,5 @@
-package server;
-
-import chess.*;
+import chess.ChessGame;
+import chess.ChessPiece;
 
 public class ServerMain {
     public static void main(String[] args) {
