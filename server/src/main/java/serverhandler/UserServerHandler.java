@@ -23,7 +23,7 @@ public class UserServerHandler extends ServerHandler {
 
         if (body == null || body.username() == null || body.password() == null || body.email() == null) {
             ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: Please include user information in register request.")));
+            ctx.result(new Gson().toJson(Map.of("message", "Error: bad request")));
         } else {
             RegisterResult result = userService.register(body);
 
@@ -56,8 +56,8 @@ public class UserServerHandler extends ServerHandler {
         ctx.contentType("application/json");
 
         if (authToken == null || !isAuthorized(authToken)) {
-            ctx.status(402);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: You are not signed in.")));
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message", "Error: unauthorized")));
         } else {
             String result = userService.logout(authToken);
 

@@ -9,7 +9,7 @@ import model.GameData;
 
 public class MemoryGameDAO implements GameDAO {
 
-    Map<String, GameData> games;
+    Map<Integer, GameData> games;
 
     public MemoryGameDAO() {
         games = new HashMap<>();
@@ -19,6 +19,12 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public List<GameData> getAllGames() {
         return new ArrayList<>(games.values());
+    }
+
+
+    @Override
+    public void addGame(GameData newGame) {
+        games.put(newGame.gameID(), newGame);
     }
 
 

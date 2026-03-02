@@ -8,4 +8,6 @@ public interface GameDAO {
     public void clear();
 
     public List<GameData> getAllGames();
+
+    public void addGame(GameData newGame);
 }

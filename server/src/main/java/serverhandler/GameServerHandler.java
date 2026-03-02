@@ -22,29 +22,35 @@ public class GameServerHandler extends ServerHandler {
         String authToken = ctx.header("authorization");
         ctx.contentType("application/json");
 
-        if (authToken == null) {
+        if (authToken == null || !isAuthorized(authToken)) {
             ctx.status(401);
             ctx.result(new Gson().toJson(Map.of("message", "Error: unauthorized")));
         } else {
-            ListGamesResult result = gameService.listGames(authToken);
+            ListGamesResult result = gameService.listGames();
 
-            ctx.status(result != null ? 401 : 200);
-
-            if (result != null) {
-                ctx.result(new Gson().toJson(result));
-            }
+            ctx.status(200);
+            ctx.result(new Gson().toJson(result));
         }
     }
 
     public void createGame(Context ctx) {
         String authToken = ctx.header("authorization");
-        String gameName = new Gson().fromJson(ctx.body(), JsonObject.class).get("gameName").getAsString();
+        JsonObject body = new Gson().fromJson(ctx.body(), JsonObject.class);
+        String gameName = body.isEmpty() ? null : body.get("gameName").getAsString();
 
         ctx.contentType("application/json");
 
-        if (authToken == null || !isAuthorized(authToken)) {
+        if (gameName == null) {
+            ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message", "Error: bad request")));
+        } else if (authToken == null || !isAuthorized(authToken)) {
             ctx.status(401);
             ctx.result(new Gson().toJson(Map.of("message", "Error: unauthorized")));
-        } 
+        } else  {
+            int gameID = gameService.createGame(gameName);
+
+            ctx.status(200);
+            ctx.result(new Gson().toJson(Map.of("gameID", gameID)));
+        }
     }
 }

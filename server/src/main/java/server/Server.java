@@ -31,7 +31,7 @@ public class Server {
         gameDAO = new MemoryGameDAO();
 
         userService = new UserService(userDAO, authDAO);
-        gameService = new GameService(gameDAO, authDAO);
+        gameService = new GameService(gameDAO);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::registerUser)
