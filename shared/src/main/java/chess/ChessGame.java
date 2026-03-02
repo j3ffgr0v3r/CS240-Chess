@@ -24,7 +24,8 @@ public class ChessGame implements Cloneable {
     private final ChessMove blackCastleKingside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(8, 7), null);
     private final ChessMove blackCastleQueenside = new ChessMove(new ChessPosition(8, 5), new ChessPosition(8, 3), null);
 
-    private final List<ChessMove> castleMoves = new ArrayList<>(Arrays.asList(whiteCastleKingside, whiteCastleQueenside, blackCastleKingside, blackCastleQueenside));
+    private final List<ChessMove> castleMoves = new ArrayList<>(
+            Arrays.asList(whiteCastleKingside, whiteCastleQueenside, blackCastleKingside, blackCastleQueenside));
     private final List<Boolean> canCastleList = new ArrayList<>(Arrays.asList(true, true, true, true));
 
     private List<ChessMove> enPassantMoves = new ArrayList<>();
@@ -59,8 +60,7 @@ public class ChessGame implements Cloneable {
      * Enum identifying the 2 possible teams in a chess game
      */
     public enum TeamColor {
-        WHITE,
-        BLACK
+        WHITE, BLACK
     }
 
     /**
@@ -68,7 +68,7 @@ public class ChessGame implements Cloneable {
      *
      * @param startPosition the piece to get valid moves for
      * @return Set of valid moves for requested piece, or null if no piece at
-     * startPosition
+     *         startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
@@ -124,7 +124,8 @@ public class ChessGame implements Cloneable {
             ChessPosition endPosition = move.getEndPosition();
             int rookDirection = (endPosition.getColumn() - startPosition.getColumn()) / 2;
             ChessPosition rook = new ChessPosition(endPosition.getRow(), (rookDirection == 1) ? 8 : 1);
-            ChessMove rookResponse = new ChessMove(rook, new ChessPosition(endPosition.getRow(), endPosition.getColumn() + ((rookDirection == 1) ? -1 : 1)), null);
+            ChessMove rookResponse = new ChessMove(rook,
+                    new ChessPosition(endPosition.getRow(), endPosition.getColumn() + ((rookDirection == 1) ? -1 : 1)), null);
             board.movePiece(rookResponse);
         }
 
@@ -138,7 +139,8 @@ public class ChessGame implements Cloneable {
         // Adds En Passant move to queue for next players turn
         // Triggers if pawn performs double move
         for (int row = 4; row < 6; row++) {
-            if (piece.getPieceType() == PieceType.PAWN && move.getStartPosition().getRow() == ((row == 4) ? 2 : 7) && move.getEndPosition().getRow() == row) {
+            if (piece.getPieceType() == PieceType.PAWN && move.getStartPosition().getRow() == ((row == 4) ? 2 : 7)
+                    && move.getEndPosition().getRow() == row) {
                 // Checks if enemy pawns are at the side of pawn
                 TeamColor target = piece.getTeamColor();
                 TeamColor attacker = (target == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
@@ -147,7 +149,8 @@ public class ChessGame implements Cloneable {
                     ChessPosition neighborPosition = new ChessPosition(row, move.getEndPosition().getColumn() + i);
                     ChessPiece neighborPiece = board.getPiece(neighborPosition);
                     if (neighborPiece != null && neighborPiece.getTeamColor() == attacker && neighborPiece.getPieceType() == PieceType.PAWN) {
-                        enPassantMoves.add(new ChessMove(neighborPosition, new ChessPosition(((row == 4) ? 3 : 6), move.getEndPosition().getColumn()), null));
+                        enPassantMoves.add(
+                                new ChessMove(neighborPosition, new ChessPosition(((row == 4) ? 3 : 6), move.getEndPosition().getColumn()), null));
                     }
                 }
             }
@@ -189,7 +192,8 @@ public class ChessGame implements Cloneable {
             if (canCastleList.get(i) && board.getPiece(new ChessPosition(side, startPosition.getColumn() + direction)) == null
                     && board.getPiece(new ChessPosition(side, startPosition.getColumn() + (direction * 2))) == null
                     && !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(side, startPosition.getColumn() + direction), null))
-                    && !putsIntoCheck(color, new ChessMove(startPosition, new ChessPosition(side, startPosition.getColumn() + (direction * 2)), null))) {
+                    && !putsIntoCheck(color,
+                            new ChessMove(startPosition, new ChessPosition(side, startPosition.getColumn() + (direction * 2)), null))) {
                 output.add(castleMove);
             }
         }

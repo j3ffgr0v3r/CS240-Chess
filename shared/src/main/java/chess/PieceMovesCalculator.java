@@ -11,15 +11,16 @@ public class PieceMovesCalculator {
 
     }
 
-    public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor color, List<Behavior> behaviors) {
+    public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor color,
+            List<Behavior> behaviors) {
+                
         List<ChessMove> moves = new ArrayList<>();
 
         List<ChessPiece.PieceType> promotions = new ArrayList<>(Arrays.asList(
                 ChessPiece.PieceType.QUEEN,
                 ChessPiece.PieceType.BISHOP,
                 ChessPiece.PieceType.KNIGHT,
-                ChessPiece.PieceType.ROOK
-        ));
+                ChessPiece.PieceType.ROOK));
 
         for (Behavior behavior : behaviors) {
             for (int i = 1; behavior.distance == -1 || i < behavior.distance + 1; i++) {

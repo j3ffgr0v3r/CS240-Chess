@@ -12,9 +12,8 @@ import java.util.Iterator;
 public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
 
     private ChessPiece[][] board = new ChessPiece[8][8];
-    private final ChessPiece[][] defaultBoard
-            = {
-                {
+    private final ChessPiece[][] defaultBoard = {
+            {
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP),
@@ -22,8 +21,8 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT),
-                    new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK)},
-                {
+                    new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK) },
+            {
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN),
@@ -31,12 +30,12 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN),
-                    new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN)},
-                new ChessPiece[8],
-                new ChessPiece[8],
-                new ChessPiece[8],
-                new ChessPiece[8],
-                {
+                    new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN) },
+            new ChessPiece[8],
+            new ChessPiece[8],
+            new ChessPiece[8],
+            new ChessPiece[8],
+            {
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN),
@@ -44,8 +43,8 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN),
-                    new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN)},
-                {
+                    new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN) },
+            {
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP),
@@ -53,8 +52,8 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP),
                     new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT),
-                    new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK)}
-            };
+                    new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK) }
+    };
 
     public ChessBoard() {
     }
@@ -63,7 +62,7 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
      * Adds a chess piece to the chessboard
      *
      * @param position where to add the piece to
-     * @param piece the piece to add
+     * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
@@ -74,7 +73,7 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
      *
      * @param position The position to get the piece from
      * @return Either the piece at the position, or null if no piece is at that
-     * position
+     *         position
      */
     public ChessPiece getPiece(ChessPosition position) {
         return board[position.getRow() - 1][position.getColumn() - 1];
@@ -185,7 +184,8 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
             for (ChessPiece[] row : board) {
                 int y = 1;
                 for (ChessPiece space : row) {
-                    if (!((space == null && ((ChessBoard) obj).getPiece(new ChessPosition(x, y)) == null) || (space != null && space.equals(((ChessBoard) obj).getPiece(new ChessPosition(x, y)))))) {
+                    if (!((space == null && ((ChessBoard) obj).getPiece(new ChessPosition(x, y)) == null)
+                            || (space != null && space.equals(((ChessBoard) obj).getPiece(new ChessPosition(x, y)))))) {
                         return false;
                     }
                     y += 1;
