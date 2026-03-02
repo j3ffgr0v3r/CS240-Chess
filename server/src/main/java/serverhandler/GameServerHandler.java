@@ -32,7 +32,7 @@ public class GameServerHandler {
             ctx.result(new Gson().toJson(result));            
         } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
-            ctx.result(new Gson().toJson(Map.of("message", e)));
+            ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
 
@@ -50,7 +50,7 @@ public class GameServerHandler {
             ctx.result(new Gson().toJson(Map.of("gameID", gameID)));
         } catch (BadRequestException | UnauthorizedException e) {
             ctx.status(e.getStatusCode());
-            ctx.result(new Gson().toJson(Map.of("message", e)));
+            ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
 
@@ -65,7 +65,7 @@ public class GameServerHandler {
             ctx.status(200);
         } catch (BadRequestException | UnauthorizedException | AlreadyTakenException e) {
             ctx.status(e.getStatusCode());
-            ctx.result(new Gson().toJson(Map.of("message", e)));
+            ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }   
     }
 }

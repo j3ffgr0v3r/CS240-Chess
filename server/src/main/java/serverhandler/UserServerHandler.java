@@ -23,33 +23,33 @@ public class UserServerHandler {
     }
 
     public void registerUser(Context ctx) {
-        RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
+        RegisterRequest request = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         ctx.contentType("application/json");
 
         try {
-            RegisterResult result = userService.register(registerRequest);
+            RegisterResult result = userService.register(request);
 
             ctx.status(200);
             ctx.result(new Gson().toJson(result));
         } catch (BadRequestException | AlreadyTakenException e) {
             ctx.status(e.getStatusCode());
-            ctx.result(new Gson().toJson(Map.of("message", e)));
+            ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
 
     }
 
     public void loginUser(Context ctx) {
-        SessionCreationRequest body = new Gson().fromJson(ctx.body(), SessionCreationRequest.class);
+        SessionCreationRequest request = new Gson().fromJson(ctx.body(), SessionCreationRequest.class);
         ctx.contentType("application/json");
 
         try {
-            SessionCreationResult result = userService.login(body);
+            SessionCreationResult result = userService.login(request);
 
             ctx.status(200);
             ctx.result(new Gson().toJson(result));
         } catch (BadRequestException | UnauthorizedException e) {
             ctx.status(e.getStatusCode());
-            ctx.result(new Gson().toJson(Map.of("message", e)));
+            ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
 
     }
@@ -65,7 +65,7 @@ public class UserServerHandler {
             ctx.result(new Gson().toJson(Map.of("message", result)));            
         } catch (BadRequestException | UnauthorizedException e) {
             ctx.status(e.getStatusCode());
-            ctx.result(new Gson().toJson(Map.of("message", e)));
+            ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
 
