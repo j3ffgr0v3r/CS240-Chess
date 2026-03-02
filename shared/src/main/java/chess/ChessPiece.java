@@ -28,12 +28,7 @@ public class ChessPiece {
      * The various different chess piece options
      */
     public enum PieceType {
-        KING,
-        QUEEN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        PAWN
+        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
     }
 
     /**
@@ -112,31 +107,7 @@ public class ChessPiece {
                     behaviors.add(new Behavior(-2, -1, 1));
                 }
                 case PAWN -> {
-                    // White goes up, black goes down (this sounds very racist...)
-                    int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
-
-                    // First move
-                    if ((pieceColor == ChessGame.TeamColor.WHITE && row == 2)
-                            || (pieceColor == ChessGame.TeamColor.BLACK && row == 7)) {
-                        behaviors.add(new Behavior(direction, 0, 2));
-                    } else {
-                        // Basic move
-                        behaviors.add(new Behavior(direction, 0, 1));
-                    }
-
-                    // Attack
-                    int scopeRow = row + direction;
-                    int scopeCol;
-                    for (int side : Arrays.asList(-1, 1)) {
-                        scopeCol = col + side;
-                        if (scopeRow >= 1 && scopeRow <= 8 && scopeCol >= 1 && scopeCol <= 8) {
-                            ChessPiece target = board.getPiece(new ChessPosition(scopeRow, scopeCol));
-                            if (target != null && target.getTeamColor() != pieceColor) {
-                                behaviors.add(new Behavior(direction, side, 1));
-                            }
-                        }
-                    }
-
+                    behaviors.addAll(pawnBehavior(board, myPosition));
                 }
                 default -> {
                 }
@@ -144,6 +115,40 @@ public class ChessPiece {
         }
 
         return calculateMoves(board, myPosition, piece.getTeamColor(), behaviors);
+    }
+
+    private List<Behavior> pawnBehavior(ChessBoard board, ChessPosition myPosition) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        List<Behavior> behaviors = new ArrayList<>();
+
+        // White goes up, black goes down (this sounds very racist...)
+        int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
+
+        // First move
+        if ((pieceColor == ChessGame.TeamColor.WHITE && row == 2)
+                || (pieceColor == ChessGame.TeamColor.BLACK && row == 7)) {
+            behaviors.add(new Behavior(direction, 0, 2));
+        } else {
+            // Basic move
+            behaviors.add(new Behavior(direction, 0, 1));
+        }
+
+        // Attack
+        int scopeRow = row + direction;
+        int scopeCol;
+        for (int side : Arrays.asList(-1, 1)) {
+            scopeCol = col + side;
+            if (scopeRow >= 1 && scopeRow <= 8 && scopeCol >= 1 && scopeCol <= 8) {
+                ChessPiece target = board.getPiece(new ChessPosition(scopeRow, scopeCol));
+                if (target != null && target.getTeamColor() != pieceColor) {
+                    behaviors.add(new Behavior(direction, side, 1));
+                }
+            }
+        }
+
+        return behaviors;
     }
 
     @Override
