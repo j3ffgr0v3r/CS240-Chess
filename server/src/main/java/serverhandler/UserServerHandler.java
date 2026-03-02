@@ -11,21 +11,30 @@ import service.UserService;
 
 public class UserServerHandler {
 
-    public UserServerHandler() {
+    private final UserService service;
 
+    public UserServerHandler(UserService service) {
+        this.service = service;
     }
     
     public void registerUser(Context ctx) {
         RegisterRequest body = new Gson().fromJson(ctx.body(), RegisterRequest.class);
+        ctx.contentType("application/json");
 
         if (body == null) {
-            ctx.contentType("application/json");
             ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("msg", "Please include user information in register request.")));
-            return;
-        }
+            ctx.result(new Gson().toJson(Map.of("message", "Please include user information in register request.")));
+        } else {
+            RegisterResult result = service.register(body);
 
-        RegisterResult result = new UserService().register(body);
+            if (!"Success".equals(result.message())) {
+                ctx.status(400);
+                ctx.result(new Gson().toJson(result));
+            } else {
+                ctx.status(200);
+                ctx.result(new Gson().toJson(result));
+            }
+        }
 
     }
 
