@@ -55,7 +55,7 @@ public class UserService {
         return new SessionCreationResult(username, createSession(username));
     }
 
-    public String logout(String authToken) throws BadRequestException, UnauthorizedException {
+    public void logout(String authToken) throws BadRequestException, UnauthorizedException {
         if (authToken == null) {
             throw new BadRequestException();
         }
@@ -63,8 +63,6 @@ public class UserService {
         isAuthorized(authToken);
 
         authDAO.terminateSession(authToken);
-
-        return null; 
     }
 
     public void clear() {

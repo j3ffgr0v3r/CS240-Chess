@@ -59,10 +59,9 @@ public class UserServerHandler {
         ctx.contentType("application/json");
 
         try {
-            String result = userService.logout(authToken);
+            userService.logout(authToken);
 
             ctx.status(200);
-            ctx.result(new Gson().toJson(Map.of("message", result)));            
         } catch (BadRequestException | UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
