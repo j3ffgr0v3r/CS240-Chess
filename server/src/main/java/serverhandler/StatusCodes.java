@@ -1,7 +1,7 @@
 package serverhandler;
 
 public enum StatusCodes {
-    OK(200, "OK"), 
+    OK(200, null), 
     BAD_REQUEST(400, "Error: bad request"),
     UNAUTHORIZED(401, "Error: unauthorized"),
     ALREADY_TAKEN(403, "Error: already taken");
