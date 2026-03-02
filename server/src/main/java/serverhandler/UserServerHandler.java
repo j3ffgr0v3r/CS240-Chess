@@ -23,9 +23,9 @@ public class UserServerHandler {
         RegisterRequest body = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         ctx.contentType("application/json");
 
-        if (body == null) {
+        if (body == null || body.username() == null || body.password() == null || body.email() == null) {
             ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message", "Please include user information in register request.")));
+            ctx.result(new Gson().toJson(Map.of("message", "Error: Please include user information in register request.")));
         } else {
             RegisterResult result = userService.register(body);
 
