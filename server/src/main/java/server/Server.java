@@ -34,6 +34,7 @@ public class Server {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::registerUser)
+                .post("/session", this::registerUser)
                 .delete("/db", this::clearApplication);
 
     }
@@ -51,6 +52,12 @@ public class Server {
         UserServerHandler handler = new UserServerHandler(userService);
 
         handler.registerUser(ctx);
+    }
+
+    private void loginUser(Context ctx) {
+        UserServerHandler handler = new UserServerHandler(userService);
+
+        handler.loginUser(ctx);
     }
 
     private void clearApplication(Context ctx) {

@@ -8,6 +8,8 @@ import model.AuthData;
 import model.UserData;
 import requestsandresults.RegisterRequest;
 import requestsandresults.RegisterResult;
+import requestsandresults.SessionCreationRequest;
+import requestsandresults.SessionCreationResult;
 
 public class UserService {
 
@@ -19,25 +21,41 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-	public RegisterResult register(RegisterRequest registerRequest) {
+    public RegisterResult register(RegisterRequest registerRequest) {
         String username = registerRequest.username();
         UserData user = userDAO.getUser(username);
 
         if (user != null) {
             return new RegisterResult("Error: Username already taken.", null, null);
         }
-        
+
         userDAO.createUser(new UserData(username, registerRequest.password(), registerRequest.email()));
 
-        String authToken = UUID.randomUUID().toString();
+        return new RegisterResult(null, username, createSession(username));
+    }
 
-        authDAO.createAuth(new AuthData(authToken, username));
+    public SessionCreationResult login(SessionCreationRequest sessionCreationRequest) {
+        String username = sessionCreationRequest.username();
 
-        return new RegisterResult(null, username, authToken);
+        UserData user = userDAO.getUser(username);
+
+        if (user == null || (user.password() == null ? sessionCreationRequest.password() != null : !user.password().equals(sessionCreationRequest.password()))) {
+            return new SessionCreationResult("Error: Invalid Credentials.", null, null);
+        }
+
+        return new SessionCreationResult(null, username, createSession(username));
     }
 
     public void clear() {
         userDAO.clear();
         authDAO.clear();
+    }
+
+    private String createSession(String username) {
+        String authToken = UUID.randomUUID().toString();
+
+        authDAO.createAuth(new AuthData(authToken, username));
+
+        return authToken;
     }
 }
