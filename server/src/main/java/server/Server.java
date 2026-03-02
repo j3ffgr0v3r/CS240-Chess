@@ -1,11 +1,11 @@
 package server;
 
-import dataaccess.Auth.AuthDAO;
-import dataaccess.Auth.MemoryAuthDAO;
-import dataaccess.Game.GameDAO;
-import dataaccess.Game.MemoryGameDAO;
-import dataaccess.User.MemoryUserDAO;
-import dataaccess.User.UserDAO;
+import dataaccess.auth.AuthDAO;
+import dataaccess.auth.MemoryAuthDAO;
+import dataaccess.game.GameDAO;
+import dataaccess.game.MemoryGameDAO;
+import dataaccess.user.MemoryUserDAO;
+import dataaccess.user.UserDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import serverhandler.ApplicationServerHandler;

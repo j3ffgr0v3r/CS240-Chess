@@ -2,14 +2,14 @@ package service;
 
 import java.util.UUID;
 
-import dataaccess.Auth.AuthDAO;
-import dataaccess.User.UserDAO;
+import dataaccess.auth.AuthDAO;
+import dataaccess.user.UserDAO;
 import model.AuthData;
 import model.UserData;
-import requestsandresults.Register.RegisterRequest;
-import requestsandresults.Register.RegisterResult;
-import requestsandresults.SessionCreation.SessionCreationRequest;
-import requestsandresults.SessionCreation.SessionCreationResult;
+import requestsandresults.register.RegisterRequest;
+import requestsandresults.register.RegisterResult;
+import requestsandresults.sessioncreation.SessionCreationRequest;
+import requestsandresults.sessioncreation.SessionCreationResult;
 
 public class UserService {
 

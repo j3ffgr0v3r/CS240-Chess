@@ -6,9 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import io.javalin.http.Context;
-import requestsandresults.CreateGame.CreateGameRequest;
-import requestsandresults.JoinGame.JoinGameRequest;
-import requestsandresults.ListGames.ListGamesResult;
+import requestsandresults.creategame.CreateGameRequest;
+import requestsandresults.joingame.JoinGameRequest;
+import requestsandresults.listgames.ListGamesResult;
 import service.AlreadyTakenException;
 import service.BadRequestException;
 import service.GameService;

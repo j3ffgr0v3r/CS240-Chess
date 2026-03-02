@@ -1,4 +1,4 @@
-package dataaccess.Game;
+package dataaccess.game;
 
 import java.util.List;
 

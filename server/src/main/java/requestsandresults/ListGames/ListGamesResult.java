@@ -1,4 +1,4 @@
-package requestsandresults.ListGames;
+package requestsandresults.listgames;
 
 import java.util.List;
 

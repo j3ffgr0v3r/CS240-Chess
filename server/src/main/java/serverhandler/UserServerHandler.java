@@ -5,10 +5,10 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import io.javalin.http.Context;
-import requestsandresults.Register.RegisterRequest;
-import requestsandresults.Register.RegisterResult;
-import requestsandresults.SessionCreation.SessionCreationRequest;
-import requestsandresults.SessionCreation.SessionCreationResult;
+import requestsandresults.register.RegisterRequest;
+import requestsandresults.register.RegisterResult;
+import requestsandresults.sessioncreation.SessionCreationRequest;
+import requestsandresults.sessioncreation.SessionCreationResult;
 import service.AlreadyTakenException;
 import service.BadRequestException;
 import service.UnauthorizedException;

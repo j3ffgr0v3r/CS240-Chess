@@ -1,4 +1,4 @@
-package dataaccess.User;
+package dataaccess.user;
 
 import java.util.HashMap;
 import java.util.Map;

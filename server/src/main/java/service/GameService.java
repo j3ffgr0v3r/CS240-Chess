@@ -3,12 +3,12 @@ package service;
 import java.util.Random;
 
 import chess.ChessGame;
-import dataaccess.Auth.AuthDAO;
-import dataaccess.Game.GameDAO;
+import dataaccess.auth.AuthDAO;
+import dataaccess.game.GameDAO;
 import model.GameData;
-import requestsandresults.CreateGame.CreateGameRequest;
-import requestsandresults.JoinGame.JoinGameRequest;
-import requestsandresults.ListGames.ListGamesResult;
+import requestsandresults.creategame.CreateGameRequest;
+import requestsandresults.joingame.JoinGameRequest;
+import requestsandresults.listgames.ListGamesResult;
 
 public class GameService {
 
