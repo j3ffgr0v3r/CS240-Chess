@@ -9,6 +9,7 @@ import dataaccess.User.UserDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import serverhandler.ApplicationServerHandler;
+import serverhandler.GameServerHandler;
 import serverhandler.UserServerHandler;
 import service.GameService;
 import service.UserService;
@@ -70,10 +71,11 @@ public class Server {
 
     
     private void listGames(Context ctx) {
-        UserServerHandler handler = new UserServerHandler(userService);
+        GameServerHandler handler = new GameServerHandler(gameService);
 
-        handler.logoutUser(ctx);
+        handler.listGames(ctx);
     }
+
 
     private void clearApplication(Context ctx) {
         ApplicationServerHandler handler = new ApplicationServerHandler(userService, gameService);
