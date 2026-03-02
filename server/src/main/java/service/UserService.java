@@ -35,4 +35,9 @@ public class UserService {
 
         return new RegisterResult(null, username, authToken);
     }
+
+    public void clear() {
+        userDAO.clear();
+        authDAO.clear();
+    }
 }
