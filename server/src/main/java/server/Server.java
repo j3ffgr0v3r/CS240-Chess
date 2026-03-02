@@ -34,7 +34,7 @@ public class Server {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::registerUser)
-                .post("/session", this::registerUser)
+                .post("/session", this::loginUser)
                 .delete("/db", this::clearApplication);
 
     }
