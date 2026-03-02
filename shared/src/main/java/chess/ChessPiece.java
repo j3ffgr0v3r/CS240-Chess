@@ -11,8 +11,8 @@ import static chess.PieceMovesCalculator.calculateMoves;
 /**
  * Represents a single chess piece
  * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
+ * Note: You can add to this class, but you may not alter signature of the
+ * existing methods.
  */
 public class ChessPiece {
 
@@ -55,9 +55,8 @@ public class ChessPiece {
     }
 
     /**
-     * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
+     * Calculates all the positions a chess piece can move to Does not take into
+     * account moves that are illegal due to leaving the king in danger
      *
      * @return Collection of valid moves
      */
@@ -68,77 +67,79 @@ public class ChessPiece {
 
         List<Behavior> behaviors = new ArrayList<>();
 
-        if (null != piece.getPieceType()) switch (piece.getPieceType()) {
-            case KING -> {
-                behaviors.add(new Behavior(1,1,1));
-                behaviors.add(new Behavior(-1,1,1));
-                behaviors.add(new Behavior(1,-1,1));
-                behaviors.add(new Behavior(-1,-1,1));
-                behaviors.add(new Behavior(1,0,1));
-                behaviors.add(new Behavior(-1,0,1));
-                behaviors.add(new Behavior(0,1,1));
-                behaviors.add(new Behavior(0,-1,1));
-            }
-            case QUEEN -> {
-                behaviors.add(new Behavior(1,1,-1));
-                behaviors.add(new Behavior(-1,1,-1));
-                behaviors.add(new Behavior(1,-1,-1));
-                behaviors.add(new Behavior(-1,-1,-1));
-                behaviors.add(new Behavior(1,0,-1));
-                behaviors.add(new Behavior(-1,0,-1));
-                behaviors.add(new Behavior(0,1,-1));
-                behaviors.add(new Behavior(0,-1,-1));
-            }
-            case BISHOP -> {
-                behaviors.add(new Behavior(1,1,-1));
-                behaviors.add(new Behavior(-1,1,-1));
-                behaviors.add(new Behavior(1,-1,-1));
-                behaviors.add(new Behavior(-1,-1,-1));
-            }
-            case ROOK -> {
-                behaviors.add(new Behavior(1,0,-1));
-                behaviors.add(new Behavior(-1,0,-1));
-                behaviors.add(new Behavior(0,1,-1));
-                behaviors.add(new Behavior(0,-1,-1));
-            } 
-            case KNIGHT -> {
-                behaviors.add(new Behavior(1,2,1));
-                behaviors.add(new Behavior(-1,2,1));
-                behaviors.add(new Behavior(1,-2,1));
-                behaviors.add(new Behavior(-1,-2,1));
-                behaviors.add(new Behavior(2,1,1));
-                behaviors.add(new Behavior(-2,1,1));
-                behaviors.add(new Behavior(2,-1,1));
-                behaviors.add(new Behavior(-2,-1,1));
-            }
-            case PAWN -> {
-                // White goes up, black goes down (this sounds very racist...)
-                int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
-
-                // First move
-                if ((pieceColor == ChessGame.TeamColor.WHITE && row == 2)||
-                    (pieceColor == ChessGame.TeamColor.BLACK && row == 7)) {
-                    behaviors.add(new Behavior(direction,0,2));
-                } else {
-                // Basic move
-                    behaviors.add(new Behavior(direction,0,1));
+        if (null != piece.getPieceType()) {
+            switch (piece.getPieceType()) {
+                case KING -> {
+                    behaviors.add(new Behavior(1, 1, 1));
+                    behaviors.add(new Behavior(-1, 1, 1));
+                    behaviors.add(new Behavior(1, -1, 1));
+                    behaviors.add(new Behavior(-1, -1, 1));
+                    behaviors.add(new Behavior(1, 0, 1));
+                    behaviors.add(new Behavior(-1, 0, 1));
+                    behaviors.add(new Behavior(0, 1, 1));
+                    behaviors.add(new Behavior(0, -1, 1));
                 }
+                case QUEEN -> {
+                    behaviors.add(new Behavior(1, 1, -1));
+                    behaviors.add(new Behavior(-1, 1, -1));
+                    behaviors.add(new Behavior(1, -1, -1));
+                    behaviors.add(new Behavior(-1, -1, -1));
+                    behaviors.add(new Behavior(1, 0, -1));
+                    behaviors.add(new Behavior(-1, 0, -1));
+                    behaviors.add(new Behavior(0, 1, -1));
+                    behaviors.add(new Behavior(0, -1, -1));
+                }
+                case BISHOP -> {
+                    behaviors.add(new Behavior(1, 1, -1));
+                    behaviors.add(new Behavior(-1, 1, -1));
+                    behaviors.add(new Behavior(1, -1, -1));
+                    behaviors.add(new Behavior(-1, -1, -1));
+                }
+                case ROOK -> {
+                    behaviors.add(new Behavior(1, 0, -1));
+                    behaviors.add(new Behavior(-1, 0, -1));
+                    behaviors.add(new Behavior(0, 1, -1));
+                    behaviors.add(new Behavior(0, -1, -1));
+                }
+                case KNIGHT -> {
+                    behaviors.add(new Behavior(1, 2, 1));
+                    behaviors.add(new Behavior(-1, 2, 1));
+                    behaviors.add(new Behavior(1, -2, 1));
+                    behaviors.add(new Behavior(-1, -2, 1));
+                    behaviors.add(new Behavior(2, 1, 1));
+                    behaviors.add(new Behavior(-2, 1, 1));
+                    behaviors.add(new Behavior(2, -1, 1));
+                    behaviors.add(new Behavior(-2, -1, 1));
+                }
+                case PAWN -> {
+                    // White goes up, black goes down (this sounds very racist...)
+                    int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
 
-                // Attack
-                int scope_row = row + direction;
-                int scope_col;
-                for (int side : Arrays.asList(-1,1)) {
-                    scope_col = col + side;
-                    if (scope_row >= 1 && scope_row <= 8 && scope_col >= 1 && scope_col <= 8) {
-                        ChessPiece target = board.getPiece(new ChessPosition(scope_row, scope_col));
-                        if (target != null && target.getTeamColor() != pieceColor) {
-                            behaviors.add(new Behavior(direction,side,1));
+                    // First move
+                    if ((pieceColor == ChessGame.TeamColor.WHITE && row == 2)
+                            || (pieceColor == ChessGame.TeamColor.BLACK && row == 7)) {
+                        behaviors.add(new Behavior(direction, 0, 2));
+                    } else {
+                        // Basic move
+                        behaviors.add(new Behavior(direction, 0, 1));
+                    }
+
+                    // Attack
+                    int scope_row = row + direction;
+                    int scope_col;
+                    for (int side : Arrays.asList(-1, 1)) {
+                        scope_col = col + side;
+                        if (scope_row >= 1 && scope_row <= 8 && scope_col >= 1 && scope_col <= 8) {
+                            ChessPiece target = board.getPiece(new ChessPosition(scope_row, scope_col));
+                            if (target != null && target.getTeamColor() != pieceColor) {
+                                behaviors.add(new Behavior(direction, side, 1));
+                            }
                         }
                     }
-                }
 
-            }
-            default -> {
+                }
+                default -> {
+                }
             }
         }
 
@@ -147,9 +148,9 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && getClass() == obj.getClass() && 
-                pieceColor == ((ChessPiece) obj).getTeamColor() &&
-                type == ((ChessPiece) obj).getPieceType();
+        return obj != null && getClass() == obj.getClass()
+                && pieceColor == ((ChessPiece) obj).getTeamColor()
+                && type == ((ChessPiece) obj).getPieceType();
     }
 
     @Override
@@ -157,5 +158,4 @@ public class ChessPiece {
         return pieceColor.hashCode() * type.hashCode();
     }
 
-    
 }
