@@ -125,12 +125,12 @@ public class ChessPiece {
                     }
 
                     // Attack
-                    int scope_row = row + direction;
-                    int scope_col;
+                    int scopeRow = row + direction;
+                    int scopeCol;
                     for (int side : Arrays.asList(-1, 1)) {
-                        scope_col = col + side;
-                        if (scope_row >= 1 && scope_row <= 8 && scope_col >= 1 && scope_col <= 8) {
-                            ChessPiece target = board.getPiece(new ChessPosition(scope_row, scope_col));
+                        scopeCol = col + side;
+                        if (scopeRow >= 1 && scopeRow <= 8 && scopeCol >= 1 && scopeCol <= 8) {
+                            ChessPiece target = board.getPiece(new ChessPosition(scopeRow, scopeCol));
                             if (target != null && target.getTeamColor() != pieceColor) {
                                 behaviors.add(new Behavior(direction, side, 1));
                             }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PieceMovesCalculator {
 
-    public record Behavior(int dir_row, int dir_col, int distance) {
+    public record Behavior(int dirRow, int dirCol, int distance) {
 
     }
 
@@ -23,8 +23,8 @@ public class PieceMovesCalculator {
 
         for (Behavior behavior : behaviors) {
             for (int i = 1; behavior.distance == -1 || i < behavior.distance + 1; i++) {
-                int newRow = position.getRow() + behavior.dir_row * i;
-                int newColumn = position.getColumn() + behavior.dir_col * i;
+                int newRow = position.getRow() + behavior.dirRow * i;
+                int newColumn = position.getColumn() + behavior.dirCol * i;
 
                 if (newRow < 1 || newRow > 8 || newColumn < 1 || newColumn > 8) {
                     break;
