@@ -56,7 +56,9 @@ public class GameServerHandler {
 
     public void joinGame(Context ctx) {
         String authToken = ctx.header("authorization");
-        JoinGameRequest request = new Gson().fromJson(authToken + ctx.body(), JoinGameRequest.class);
+        JsonObject body = new Gson().fromJson(ctx.body(), JsonObject.class);
+        body.addProperty("authToken", authToken);
+        JoinGameRequest request = new Gson().fromJson(body, JoinGameRequest.class);
 
         ctx.contentType("application/json");
 
