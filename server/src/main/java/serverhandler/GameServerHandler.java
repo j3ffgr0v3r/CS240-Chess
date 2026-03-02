@@ -6,16 +6,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import io.javalin.http.Context;
+import requestsandresults.CreateGame.CreateGameRequest;
 import requestsandresults.JoinGame.JoinGameRequest;
 import requestsandresults.ListGames.ListGamesResult;
+import service.AlreadyTakenException;
+import service.BadRequestException;
 import service.GameService;
-import service.UserService;
+import service.UnauthorizedException;
 
-public class GameServerHandler extends ServerHandler {
+public class GameServerHandler {
     private final GameService gameService;
 
-    public GameServerHandler(UserService userService, GameService gameService) {
-        super(userService);
+    public GameServerHandler(GameService gameService) {
         this.gameService = gameService;
     }
 
@@ -23,14 +25,14 @@ public class GameServerHandler extends ServerHandler {
         String authToken = ctx.header("authorization");
         ctx.contentType("application/json");
 
-        if (authToken == null || !isAuthorized(authToken)) {
-            ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: unauthorized")));
-        } else {
-            ListGamesResult result = gameService.listGames();
+        try {
+            ListGamesResult result = gameService.listGames(authToken);
 
             ctx.status(200);
-            ctx.result(new Gson().toJson(result));
+            ctx.result(new Gson().toJson(result));            
+        } catch (UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.result(new Gson().toJson(Map.of("message", e)));
         }
     }
 
@@ -41,37 +43,29 @@ public class GameServerHandler extends ServerHandler {
 
         ctx.contentType("application/json");
 
-        if (gameName == null) {
-            ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: bad request")));
-        } else if (authToken == null || !isAuthorized(authToken)) {
-            ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: unauthorized")));
-        } else {
-            int gameID = gameService.createGame(gameName);
+        try {
+            int gameID = gameService.createGame(new CreateGameRequest(authToken, gameName));
 
             ctx.status(200);
             ctx.result(new Gson().toJson(Map.of("gameID", gameID)));
+        } catch (BadRequestException | UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.result(new Gson().toJson(Map.of("message", e)));
         }
     }
 
     public void joinGame(Context ctx) {
         String authToken = ctx.header("authorization");
-        JoinGameRequest request = new Gson().fromJson(ctx.body(), JoinGameRequest.class);
+        JoinGameRequest request = new Gson().fromJson(authToken + ctx.body(), JoinGameRequest.class);
 
         ctx.contentType("application/json");
 
-        if (request.playerColor() == null || request.gameID() == 0) {
-            ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: bad request")));
-        } else if (authToken == null || !isAuthorized(authToken)) {
-            ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: unauthorized")));
-        } else if (!gameService.joinGame(request)) {
-            ctx.status(403);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: already taken")));
-        } else {
+        try {
+            gameService.joinGame(request);
             ctx.status(200);
-        }
+        } catch (BadRequestException | UnauthorizedException | AlreadyTakenException e) {
+            ctx.status(e.getStatusCode());
+            ctx.result(new Gson().toJson(Map.of("message", e)));
+        }   
     }
 }

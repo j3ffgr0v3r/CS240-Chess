@@ -9,27 +9,31 @@ import requestsandresults.Register.RegisterRequest;
 import requestsandresults.Register.RegisterResult;
 import requestsandresults.SessionCreation.SessionCreationRequest;
 import requestsandresults.SessionCreation.SessionCreationResult;
+import service.AlreadyTakenException;
+import service.BadRequestException;
+import service.UnauthorizedException;
 import service.UserService;
 
-public class UserServerHandler extends ServerHandler {
+public class UserServerHandler {
+
+    UserService userService;
 
     public UserServerHandler(UserService userService) {
-        super(userService);
+        this.userService = userService;
     }
 
     public void registerUser(Context ctx) {
-        RegisterRequest body = new Gson().fromJson(ctx.body(), RegisterRequest.class);
+        RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         ctx.contentType("application/json");
 
-        if (body == null || body.username() == null || body.password() == null || body.email() == null) {
-            ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: bad request")));
-        } else {
-            RegisterResult result = userService.register(body);
+        try {
+            RegisterResult result = userService.register(registerRequest);
 
-            ctx.status(result.message() != null ? 403 : 200);
-
+            ctx.status(200);
             ctx.result(new Gson().toJson(result));
+        } catch (BadRequestException | AlreadyTakenException e) {
+            ctx.status(e.getStatusCode());
+            ctx.result(new Gson().toJson(Map.of("message", e)));
         }
 
     }
@@ -38,15 +42,14 @@ public class UserServerHandler extends ServerHandler {
         SessionCreationRequest body = new Gson().fromJson(ctx.body(), SessionCreationRequest.class);
         ctx.contentType("application/json");
 
-        if (body == null || body.username() == null || body.password() == null) {
-            ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: bad request")));
-        } else {
+        try {
             SessionCreationResult result = userService.login(body);
 
-            ctx.status(result.message() != null ? 401 : 200);
-
+            ctx.status(200);
             ctx.result(new Gson().toJson(result));
+        } catch (BadRequestException | UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.result(new Gson().toJson(Map.of("message", e)));
         }
 
     }
@@ -55,19 +58,15 @@ public class UserServerHandler extends ServerHandler {
         String authToken = ctx.header("authorization");
         ctx.contentType("application/json");
 
-        if (authToken == null || !isAuthorized(authToken)) {
-            ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("message", "Error: unauthorized")));
-        } else {
+        try {
             String result = userService.logout(authToken);
 
-            ctx.status(result != null ? 401 : 200);
-
-            if (result != null) {
-                ctx.result(new Gson().toJson(Map.of("message", result)));
-            }
+            ctx.status(200);
+            ctx.result(new Gson().toJson(Map.of("message", result)));            
+        } catch (BadRequestException | UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.result(new Gson().toJson(Map.of("message", e)));
         }
-
     }
 
 }

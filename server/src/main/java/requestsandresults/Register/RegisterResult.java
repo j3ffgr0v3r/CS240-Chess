@@ -1,5 +1,5 @@
 package requestsandresults.Register;
 
-public record RegisterResult(String message, String username, String authToken) {
+public record RegisterResult(String username, String authToken) {
     
 }

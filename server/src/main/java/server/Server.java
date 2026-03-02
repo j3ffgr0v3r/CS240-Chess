@@ -31,7 +31,7 @@ public class Server {
         gameDAO = new MemoryGameDAO();
 
         userService = new UserService(userDAO, authDAO);
-        gameService = new GameService(gameDAO);
+        gameService = new GameService(gameDAO, authDAO);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::registerUser)
@@ -73,19 +73,19 @@ public class Server {
 
     
     private void listGames(Context ctx) {
-        GameServerHandler handler = new GameServerHandler(userService, gameService);
+        GameServerHandler handler = new GameServerHandler(gameService);
 
         handler.listGames(ctx);
     }
 
     private void createGame(Context ctx) {
-        GameServerHandler handler = new GameServerHandler(userService, gameService);
+        GameServerHandler handler = new GameServerHandler(gameService);
 
         handler.createGame(ctx);
     }
 
     private void joinGame(Context ctx) {
-        GameServerHandler handler = new GameServerHandler(userService, gameService);
+        GameServerHandler handler = new GameServerHandler(gameService);
 
         handler.joinGame(ctx);
     }

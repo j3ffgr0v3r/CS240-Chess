@@ -1,5 +1,5 @@
 package requestsandresults.SessionCreation;
 
-public record SessionCreationResult(String message, String username, String authToken) {
+public record SessionCreationResult(String username, String authToken) {
     
 }

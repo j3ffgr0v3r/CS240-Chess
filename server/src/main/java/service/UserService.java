@@ -21,32 +21,47 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) {
-        String username = registerRequest.username();
+    public RegisterResult register(RegisterRequest request) throws BadRequestException, AlreadyTakenException {
+
+        if (request == null || request.username() == null || request.password() == null || request.email() == null) {
+            throw new BadRequestException();
+        }
+
+        String username = request.username();
         UserData user = userDAO.getUser(username);
 
         if (user != null) {
-            return new RegisterResult("Error: Username already taken.", null, null);
+            throw new AlreadyTakenException();
         }
 
-        userDAO.createUser(new UserData(username, registerRequest.password(), registerRequest.email()));
+        userDAO.createUser(new UserData(username, request.password(), request.email()));
 
-        return new RegisterResult(null, username, createSession(username));
+        return new RegisterResult(username, createSession(username));
     }
 
-    public SessionCreationResult login(SessionCreationRequest sessionCreationRequest) {
-        String username = sessionCreationRequest.username();
+    public SessionCreationResult login(SessionCreationRequest request) throws BadRequestException, UnauthorizedException {
 
+        if (request == null || request.username() == null || request.password() == null) {
+            throw new BadRequestException();
+        }
+
+        String username = request.username();
         UserData user = userDAO.getUser(username);
 
-        if (user == null || (user.password() == null ? sessionCreationRequest.password() != null : !user.password().equals(sessionCreationRequest.password()))) {
-            return new SessionCreationResult("Error: unauthorized", null, null);
+        if (user == null || (user.password() == null ? request.password() != null : !user.password().equals(request.password()))) {
+            throw new UnauthorizedException();
         }
 
-        return new SessionCreationResult(null, username, createSession(username));
+        return new SessionCreationResult(username, createSession(username));
     }
 
-    public String logout(String authToken) {
+    public String logout(String authToken) throws BadRequestException, UnauthorizedException {
+        if (authToken == null) {
+            throw new BadRequestException();
+        }
+
+        isAuthorized(authToken);
+
         authDAO.terminateSession(authToken);
 
         return null; 
@@ -58,8 +73,10 @@ public class UserService {
     }
 
     
-    public boolean isAuthorized(String authToken) {
-        return authDAO.getSession(authToken) != null;
+    public void isAuthorized(String authToken) throws UnauthorizedException {
+        if (authDAO.getSession(authToken) == null) {
+            throw new UnauthorizedException();
+        }
     }
 
     private String createSession(String username) {
