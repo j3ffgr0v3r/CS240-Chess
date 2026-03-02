@@ -100,37 +100,41 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
         for (ChessPiece[] row : board) {
             output += "|";
             for (ChessPiece space : row) {
-                if (space == null) {
-                    output += " ";
-                } else {
-                    switch (space.getPieceType()) {
-                        case KING -> {
-                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "K" : "k";
-                        }
-                        case QUEEN -> {
-                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "Q" : "q";
-                        }
-                        case BISHOP -> {
-                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "B" : "b";
-                        }
-                        case ROOK -> {
-                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "R" : "r";
-                        }
-                        case KNIGHT -> {
-                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "N" : "n";
-                        }
-                        case PAWN -> {
-                            output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "P" : "p";
-                        }
-                        default -> {
-                        }
-                    }
-                }
-                output += "|";
+                output += spaceToString(space) + "|";
             }
             output += "\n";
         }
         return output;
+    }
+
+    private String spaceToString(ChessPiece space) {
+        if (space == null) {
+            return " ";
+        }
+        switch (space.getPieceType()) {
+            case KING -> {
+                return (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "K" : "k";
+            }
+            case QUEEN -> {
+                return (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "Q" : "q";
+            }
+            case BISHOP -> {
+                return (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "B" : "b";
+            }
+            case ROOK -> {
+                return (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "R" : "r";
+            }
+            case KNIGHT -> {
+                return (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "N" : "n";
+            }
+            case PAWN -> {
+                return (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "P" : "p";
+            }
+            default -> {
+                return "?";
+            }
+        }
+
     }
 
     @Override
