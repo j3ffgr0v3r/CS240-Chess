@@ -11,12 +11,10 @@ import requestsandresults.SessionCreation.SessionCreationRequest;
 import requestsandresults.SessionCreation.SessionCreationResult;
 import service.UserService;
 
-public class UserServerHandler {
-
-    private final UserService userService;
+public class UserServerHandler extends ServerHandler {
 
     public UserServerHandler(UserService userService) {
-        this.userService = userService;
+        super(userService);
     }
 
     public void registerUser(Context ctx) {
@@ -57,7 +55,7 @@ public class UserServerHandler {
         String authToken = ctx.header("authorization");
         ctx.contentType("application/json");
 
-        if (authToken == null) {
+        if (authToken == null || !isAuthorized(authToken)) {
             ctx.status(402);
             ctx.result(new Gson().toJson(Map.of("message", "Error: You are not signed in.")));
         } else {

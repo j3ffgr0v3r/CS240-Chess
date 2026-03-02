@@ -47,12 +47,6 @@ public class UserService {
     }
 
     public String logout(String authToken) {
-        AuthData authData = authDAO.getSession(authToken);
-
-        if (authData == null) {
-            return "Error: unauthorized";
-        }
-
         authDAO.terminateSession(authToken);
 
         return null; 
@@ -61,6 +55,11 @@ public class UserService {
     public void clear() {
         userDAO.clear();
         authDAO.clear();
+    }
+
+    
+    public boolean isAuthorized(String authToken) {
+        return authDAO.getSession(authToken) != null;
     }
 
     private String createSession(String username) {

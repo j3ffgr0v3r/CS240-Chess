@@ -38,6 +38,7 @@ public class Server {
                 .post("/session", this::loginUser)
                 .delete("/session", this::logoutUser)
                 .get("/game", this::listGames)
+                .post("/game", this::createGame)
                 .delete("/db", this::clearApplication);
 
     }
@@ -71,11 +72,16 @@ public class Server {
 
     
     private void listGames(Context ctx) {
-        GameServerHandler handler = new GameServerHandler(gameService);
+        GameServerHandler handler = new GameServerHandler(userService, gameService);
 
         handler.listGames(ctx);
     }
 
+    private void createGame(Context ctx) {
+        GameServerHandler handler = new GameServerHandler(userService, gameService);
+
+        handler.createGame(ctx);
+    }
 
     private void clearApplication(Context ctx) {
         ApplicationServerHandler handler = new ApplicationServerHandler(userService, gameService);
