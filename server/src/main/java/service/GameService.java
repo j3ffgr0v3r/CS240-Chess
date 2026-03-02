@@ -21,7 +21,7 @@ public class GameService {
     }
 
     public int createGame(String gameName) {
-        int gameID = (new Random()).nextInt();
+        int gameID = (new Random()).nextInt(Integer.MAX_VALUE-1)+1;
 
         gameDAO.setGame(new GameData(gameID, null, null, gameName, new ChessGame()));
 
