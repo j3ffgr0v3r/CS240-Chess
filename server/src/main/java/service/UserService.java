@@ -70,7 +70,6 @@ public class UserService {
         authDAO.clear();
     }
 
-    
     public void isAuthorized(String authToken) throws UnauthorizedException {
         if (authDAO.getSession(authToken) == null) {
             throw new UnauthorizedException();

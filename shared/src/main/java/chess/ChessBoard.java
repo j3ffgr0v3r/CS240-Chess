@@ -84,7 +84,7 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
                         }
                         case ROOK -> {
                             output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "R" : "r";
-                        } 
+                        }
                         case KNIGHT -> {
                             output += (space.getTeamColor() == ChessGame.TeamColor.WHITE) ? "N" : "n";
                         }
@@ -96,9 +96,9 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
                     }
                 }
                 output += "|";
-                }
-            output += "\n";
             }
+            output += "\n";
+        }
         return output;
     }
 
@@ -113,7 +113,7 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
             @Override
             public boolean hasNext() {
                 // Check if a current element is the last in the array
-                return (next <= board.length*board[0].length - 1);
+                return (next <= board.length * board[0].length - 1);
             }
 
             @Override
@@ -137,7 +137,7 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
         try {
             ChessBoard clone = (ChessBoard) super.clone();
             clone.board = new ChessPiece[8][8];
-            for (int i =0; i<board.length; i++) {
+            for (int i = 0; i < board.length; i++) {
                 clone.board[i] = Arrays.copyOf(board[i], board[i].length);
             }
             return clone;

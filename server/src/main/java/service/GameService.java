@@ -29,11 +29,11 @@ public class GameService {
     public int createGame(CreateGameRequest request) throws BadRequestException, UnauthorizedException {
         if (request.gameName() == null) {
             throw new BadRequestException();
-        } 
+        }
 
         isAuthorized(request.authToken());
 
-        int gameID = (new Random()).nextInt(Integer.MAX_VALUE-1)+1;
+        int gameID = (new Random()).nextInt(Integer.MAX_VALUE - 1) + 1;
 
         gameDAO.setGame(new GameData(gameID, null, null, request.gameName(), new ChessGame()));
 
@@ -61,16 +61,16 @@ public class GameService {
                 throw new AlreadyTakenException();
             }
             updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
-        } 
+        }
 
         gameDAO.setGame(updatedGame);
         return true;
     }
 
-	public void clear() {
+    public void clear() {
         gameDAO.clear();
     }
-    
+
     public void isAuthorized(String authToken) throws UnauthorizedException {
         if (authDAO.getSession(authToken) == null) {
             throw new UnauthorizedException();

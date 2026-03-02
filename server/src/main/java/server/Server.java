@@ -71,7 +71,6 @@ public class Server {
         handler.logoutUser(ctx);
     }
 
-    
     private void listGames(Context ctx) {
         GameServerHandler handler = new GameServerHandler(gameService);
 

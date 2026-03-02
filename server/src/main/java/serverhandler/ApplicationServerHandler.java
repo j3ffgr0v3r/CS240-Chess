@@ -13,7 +13,7 @@ public class ApplicationServerHandler {
         this.userService = userService;
         this.gameService = gameService;
     }
-    
+
     public void clearApplication(Context ctx) {
         userService.clear();
         gameService.clear();

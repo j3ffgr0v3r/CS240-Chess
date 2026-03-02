@@ -5,8 +5,8 @@ import java.util.Objects;
 /**
  * Represents a single square position on a chess board
  * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
+ * Note: You can add to this class, but you may not alter signature of the
+ * existing methods.
  */
 public class ChessPosition {
 
@@ -19,16 +19,14 @@ public class ChessPosition {
     }
 
     /**
-     * @return which row this position is in
-     * 1 codes for the bottom row
+     * @return which row this position is in 1 codes for the bottom row
      */
     public int getRow() {
         return row;
     }
 
     /**
-     * @return which column this position is in
-     * 1 codes for the left row
+     * @return which column this position is in 1 codes for the left row
      */
     public int getColumn() {
         return col;
@@ -41,9 +39,9 @@ public class ChessPosition {
 
     @Override
     public boolean equals(Object obj) {
-        return getClass() == obj.getClass() && 
-                row == ((ChessPosition) obj).getRow() &&
-                col == ((ChessPosition) obj).getColumn();
+        return getClass() == obj.getClass()
+                && row == ((ChessPosition) obj).getRow()
+                && col == ((ChessPosition) obj).getColumn();
     }
 
     @Override
