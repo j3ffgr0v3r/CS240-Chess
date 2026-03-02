@@ -27,13 +27,9 @@ public class UserServerHandler {
         } else {
             RegisterResult result = service.register(body);
 
-            if (!"Success".equals(result.message())) {
-                ctx.status(400);
-                ctx.result(new Gson().toJson(result));
-            } else {
-                ctx.status(200);
-                ctx.result(new Gson().toJson(result));
-            }
+            ctx.status(result.message() != null ? 403 : 200);
+
+            ctx.result(new Gson().toJson(result));
         }
 
     }
