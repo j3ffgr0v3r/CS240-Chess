@@ -9,5 +9,7 @@ public interface GameDAO {
 
     public List<GameData> getAllGames();
 
-    public void addGame(GameData newGame);
+    public void setGame(GameData newGame);
+
+    public GameData getGame(int gameID);
 }
