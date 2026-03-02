@@ -18,7 +18,6 @@ public class ApplicationServerHandler {
         userService.clear();
         gameService.clear();
 
-
         ctx.contentType("application/json");
         ctx.status(200);
     }
