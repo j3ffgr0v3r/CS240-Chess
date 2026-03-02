@@ -15,8 +15,8 @@ public class UserServerHandler {
 
     private final UserService userService;
 
-    public UserServerHandler(UserService service) {
-        this.userService = service;
+    public UserServerHandler(UserService userService) {
+        this.userService = userService;
     }
 
     public void registerUser(Context ctx) {

@@ -30,12 +30,13 @@ public class Server {
         gameDAO = new MemoryGameDAO();
 
         userService = new UserService(userDAO, authDAO);
-        gameService = new GameService(gameDAO);
+        gameService = new GameService(gameDAO, authDAO);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::registerUser)
                 .post("/session", this::loginUser)
                 .delete("/session", this::logoutUser)
+                .get("/game", this::listGames)
                 .delete("/db", this::clearApplication);
 
     }
@@ -62,6 +63,13 @@ public class Server {
     }
 
     private void logoutUser(Context ctx) {
+        UserServerHandler handler = new UserServerHandler(userService);
+
+        handler.logoutUser(ctx);
+    }
+
+    
+    private void listGames(Context ctx) {
         UserServerHandler handler = new UserServerHandler(userService);
 
         handler.logoutUser(ctx);
