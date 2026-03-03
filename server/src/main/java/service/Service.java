@@ -10,7 +10,7 @@ public abstract class Service {
         this.authDAO = authDAO;
     }
 
-    public void isAuthorized(String authToken) throws UnauthorizedException {
+    protected void isAuthorized(String authToken) throws UnauthorizedException {
         if (authDAO.getSession(authToken) == null) {
             throw new UnauthorizedException();
         }
