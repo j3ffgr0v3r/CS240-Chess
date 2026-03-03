@@ -109,4 +109,22 @@ public class GameServiceTest {
         }
     }
 
+    @Test
+    void testClear() {
+        authDAO.createSession(new AuthData("authToken", "username"));
+        
+        try {
+            gameService.createGame(new CreateGameRequest("authToken", "gameName"));
+
+            gameService.clear();
+
+            assertTrue(gameDAO.getAllGames().isEmpty());
+            
+        } catch (BadRequestException | UnauthorizedException e) {
+            fail();
+        }
+
+
+    }
+
 }
