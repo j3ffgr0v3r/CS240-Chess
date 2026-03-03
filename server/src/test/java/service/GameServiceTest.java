@@ -49,7 +49,7 @@ public class GameServiceTest {
         } catch (UnauthorizedException e) {
             fail();
         }
-        
+
     }
 
     @Test
@@ -68,7 +68,7 @@ public class GameServiceTest {
         } catch (BadRequestException | UnauthorizedException e) {
             fail();
         }
-        
+
     }
 
     @Test
@@ -86,7 +86,7 @@ public class GameServiceTest {
             gameID = gameService.createGame(new CreateGameRequest("authToken", "gameName"));
 
             gameService.joinGame(new JoinGameRequest("authToken", "WHITE", gameID));
-            
+
         } catch (BadRequestException | UnauthorizedException | AlreadyTakenException e) {
             fail();
         }
@@ -103,7 +103,7 @@ public class GameServiceTest {
 
             gameService.joinGame(new JoinGameRequest("authToken", "WHITE", gameID));
             assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(new JoinGameRequest("authToken", "WHITE", gameID)));
-            
+
         } catch (BadRequestException | UnauthorizedException | AlreadyTakenException e) {
             fail();
         }
@@ -112,18 +112,17 @@ public class GameServiceTest {
     @Test
     void testClear() {
         authDAO.createSession(new AuthData("authToken", "username"));
-        
+
         try {
             gameService.createGame(new CreateGameRequest("authToken", "gameName"));
 
             gameService.clear();
 
             assertTrue(gameDAO.getAllGames().isEmpty());
-            
+
         } catch (BadRequestException | UnauthorizedException e) {
             fail();
         }
-
 
     }
 
