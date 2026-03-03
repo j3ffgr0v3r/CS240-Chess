@@ -10,14 +10,13 @@ import requestsandresults.creategame.CreateGameRequest;
 import requestsandresults.joingame.JoinGameRequest;
 import requestsandresults.listgames.ListGamesResult;
 
-public class GameService {
+public class GameService extends Service {
 
     GameDAO gameDAO;
-    AuthDAO authDAO;
 
     public GameService(GameDAO gameDAO, AuthDAO authDAO) {
+        super(authDAO);
         this.gameDAO = gameDAO;
-        this.authDAO = authDAO;
     }
 
     public ListGamesResult listGames(String authToken) throws UnauthorizedException {
@@ -69,12 +68,6 @@ public class GameService {
 
     public void clear() {
         gameDAO.clear();
-    }
-
-    public void isAuthorized(String authToken) throws UnauthorizedException {
-        if (authDAO.getSession(authToken) == null) {
-            throw new UnauthorizedException();
-        }
     }
 
 }

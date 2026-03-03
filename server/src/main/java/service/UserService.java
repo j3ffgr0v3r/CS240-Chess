@@ -11,14 +11,13 @@ import requestsandresults.register.RegisterResult;
 import requestsandresults.sessioncreation.SessionCreationRequest;
 import requestsandresults.sessioncreation.SessionCreationResult;
 
-public class UserService {
+public class UserService extends Service {
 
     UserDAO userDAO;
-    AuthDAO authDAO;
 
     public UserService(UserDAO userDAO, AuthDAO authDAO) {
+        super(authDAO);
         this.userDAO = userDAO;
-        this.authDAO = authDAO;
     }
 
     public RegisterResult register(RegisterRequest request) throws BadRequestException, AlreadyTakenException {
@@ -68,12 +67,6 @@ public class UserService {
     public void clear() {
         userDAO.clear();
         authDAO.clear();
-    }
-
-    public void isAuthorized(String authToken) throws UnauthorizedException {
-        if (authDAO.getSession(authToken) == null) {
-            throw new UnauthorizedException();
-        }
     }
 
     private String createSession(String username) {
