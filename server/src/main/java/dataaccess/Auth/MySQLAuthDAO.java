@@ -1,8 +1,25 @@
 package dataaccess.auth;
 
+import dataaccess.DataAccessException;
+import dataaccess.MySQLDAO;
 import model.AuthData;
 
-public class MySQLAuthDAO implements AuthDAO {
+public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
+
+    private final String[] createStatements = {
+            """
+                        CREATE TABLE IF NOT EXISTS  auth (
+                            `authToken` varchar(256) NOT NULL,
+                            `authData` TEXT DEFAULT NULL,
+                            PRIMARY KEY (`authToken`),
+                            INDEX(authToken)
+                        )
+                    """
+    };
+
+    public MySQLAuthDAO() throws DataAccessException {
+        configureDatabase(createStatements);
+    }
 
     @Override
     public void createSession(AuthData authData) {
@@ -23,5 +40,4 @@ public class MySQLAuthDAO implements AuthDAO {
     public void clear() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
 }
