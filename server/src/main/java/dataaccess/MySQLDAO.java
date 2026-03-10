@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 
 public abstract class MySQLDAO {
 
-    protected boolean executeUpdate(String statement, Object... params) throws DataAccessException {
+    protected int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
@@ -22,7 +22,11 @@ public abstract class MySQLDAO {
                 ps.executeUpdate();
 
                 ResultSet rs = ps.getGeneratedKeys();
-                return rs.next();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+
+                return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
