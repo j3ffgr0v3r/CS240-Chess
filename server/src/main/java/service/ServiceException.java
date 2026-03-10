@@ -1,15 +1,11 @@
 package service;
 
-public class ServiceException extends Exception {
+import serverhandler.HTTPException;
 
-    private final int statusCode;
-
+public class ServiceException extends HTTPException {
+    
     public ServiceException(int statusCode, String message) {
-        super(message);
-        this.statusCode = statusCode;
+        super(statusCode, message);
     }
 
-    public int getStatusCode() {
-        return statusCode;
-    }
 }
