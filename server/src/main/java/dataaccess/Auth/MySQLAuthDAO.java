@@ -22,8 +22,8 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
     }
 
     @Override
-    public void createSession(AuthData authData) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void createSession(AuthData authData) throws DataAccessException {
+        executeUpdate("insert into auth (authToken, authData) VALUES (?, ?);", authData.authToken(), authData);
     }
 
     @Override

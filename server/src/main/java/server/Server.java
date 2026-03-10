@@ -1,7 +1,8 @@
 package server;
 
+import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
-import dataaccess.auth.MemoryAuthDAO;
+import dataaccess.auth.MySQLAuthDAO;
 import dataaccess.game.GameDAO;
 import dataaccess.game.MemoryGameDAO;
 import dataaccess.user.MemoryUserDAO;
@@ -15,7 +16,6 @@ import service.GameService;
 import service.UserService;
 
 public class Server {
-
     private final Javalin javalin;
 
     private final UserDAO userDAO;
@@ -26,21 +26,25 @@ public class Server {
     private final GameService gameService;
 
     public Server() {
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
+        try {
+            authDAO = new MySQLAuthDAO();
+            userDAO = new MemoryUserDAO();
+            gameDAO = new MemoryGameDAO();
 
-        userService = new UserService(userDAO, authDAO);
-        gameService = new GameService(gameDAO, authDAO);
+            userService = new UserService(userDAO, authDAO);
+            gameService = new GameService(gameDAO, authDAO);
 
-        javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/user", this::registerUser)
-                .post("/session", this::loginUser)
-                .delete("/session", this::logoutUser)
-                .get("/game", this::listGames)
-                .post("/game", this::createGame)
-                .put("/game", this::joinGame)
-                .delete("/db", this::clearApplication);
+            javalin = Javalin.create(config -> config.staticFiles.add("web"))
+                    .post("/user", this::registerUser)
+                    .post("/session", this::loginUser)
+                    .delete("/session", this::logoutUser)
+                    .get("/game", this::listGames)
+                    .post("/game", this::createGame)
+                    .put("/game", this::joinGame)
+                    .delete("/db", this::clearApplication);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e.getMessage());
+        }
 
     }
 

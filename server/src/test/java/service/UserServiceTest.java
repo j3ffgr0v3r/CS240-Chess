@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 import dataaccess.auth.MemoryAuthDAO;
 import dataaccess.user.MemoryUserDAO;
@@ -31,7 +32,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegisterAlreadyTaken() {
+    void testRegisterAlreadyTaken() throws DataAccessException {
         try {
             userService.register(new RegisterRequest("username", "email", "password"));
 
@@ -43,7 +44,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister() {
+    void testRegister() throws DataAccessException {
         try {
             String authToken = userService.register(new RegisterRequest("username", "email", "password")).authToken();
 
@@ -60,7 +61,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testLogout() {
+    void testLogout() throws DataAccessException {
         try {
             String authToken = userService.register(new RegisterRequest("username", "email", "password")).authToken();
 
@@ -79,7 +80,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testLogin() {
+    void testLogin() throws DataAccessException {
         try {
             userDAO.createUser(new UserData("username", "password", "email"));
 
@@ -91,7 +92,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testClear() {
+    void testClear() throws DataAccessException {
         try {
             String authToken = userService.register(new RegisterRequest("username", "email", "password")).authToken();
 

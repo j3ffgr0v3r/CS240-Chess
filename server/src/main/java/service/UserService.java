@@ -2,6 +2,7 @@ package service;
 
 import java.util.UUID;
 
+import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 import dataaccess.user.UserDAO;
 import model.AuthData;
@@ -20,7 +21,7 @@ public class UserService extends Service {
         this.userDAO = userDAO;
     }
 
-    public RegisterResult register(RegisterRequest request) throws BadRequestException, AlreadyTakenException {
+    public RegisterResult register(RegisterRequest request) throws BadRequestException, AlreadyTakenException, DataAccessException {
 
         if (request == null || request.username() == null || request.password() == null || request.email() == null) {
             throw new BadRequestException();
@@ -38,7 +39,7 @@ public class UserService extends Service {
         return new RegisterResult(username, createSession(username));
     }
 
-    public SessionCreationResult login(SessionCreationRequest request) throws BadRequestException, UnauthorizedException {
+    public SessionCreationResult login(SessionCreationRequest request) throws BadRequestException, UnauthorizedException, DataAccessException {
 
         if (request == null || request.username() == null || request.password() == null) {
             throw new BadRequestException();
@@ -69,7 +70,7 @@ public class UserService extends Service {
         authDAO.clear();
     }
 
-    private String createSession(String username) {
+    private String createSession(String username) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
 
         authDAO.createSession(new AuthData(authToken, username));

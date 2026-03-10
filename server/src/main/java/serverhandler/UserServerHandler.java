@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import requestsandresults.register.RegisterRequest;
 import requestsandresults.register.RegisterResult;
@@ -31,7 +32,7 @@ public class UserServerHandler {
 
             ctx.status(200);
             ctx.result(new Gson().toJson(result));
-        } catch (BadRequestException | AlreadyTakenException e) {
+        } catch (BadRequestException | AlreadyTakenException | DataAccessException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
@@ -47,7 +48,7 @@ public class UserServerHandler {
 
             ctx.status(200);
             ctx.result(new Gson().toJson(result));
-        } catch (BadRequestException | UnauthorizedException e) {
+        } catch (BadRequestException | UnauthorizedException | DataAccessException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }

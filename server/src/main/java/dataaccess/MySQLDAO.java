@@ -29,7 +29,7 @@ public abstract class MySQLDAO {
         }
     }
 
-    protected void configureDatabase(String[] createStatements) throws DataAccessException {
+    protected void configureDatabase(String[] createStatements) throws DataAccessException, DatabaseConnectionFailure, DatabaseCreationFailure {
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
             for (String statement : createStatements) {

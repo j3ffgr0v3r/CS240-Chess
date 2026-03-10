@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 import dataaccess.auth.MemoryAuthDAO;
 import dataaccess.game.GameDAO;
@@ -37,7 +38,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testListGames() {
+    void testListGames() throws DataAccessException {
         authDAO.createSession(new AuthData("authToken", "username"));
 
         GameData game = new GameData(123, null, null, "gameName", new ChessGame());
@@ -58,7 +59,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testCreateGame() {
+    void testCreateGame() throws DataAccessException {
         authDAO.createSession(new AuthData("authToken", "username"));
 
         try {
@@ -77,7 +78,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testJoinGame() {
+    void testJoinGame() throws DataAccessException {
         authDAO.createSession(new AuthData("authToken", "username"));
 
         int gameID;
@@ -93,7 +94,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testJoinGameAlreadyTaken() {
+    void testJoinGameAlreadyTaken() throws DataAccessException {
         authDAO.createSession(new AuthData("authToken", "username"));
 
         int gameID;
@@ -110,7 +111,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testClear() {
+    void testClear() throws DataAccessException {
         authDAO.createSession(new AuthData("authToken", "username"));
 
         try {
