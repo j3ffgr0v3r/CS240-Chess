@@ -3,6 +3,7 @@ package service;
 import java.util.Random;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 import dataaccess.game.GameDAO;
 import model.GameData;
@@ -14,18 +15,18 @@ public class GameService extends Service {
 
     GameDAO gameDAO;
 
-    public GameService(GameDAO gameDAO, AuthDAO authDAO) {
+    public GameService(GameDAO gameDAO, AuthDAO authDAO) throws DataAccessException {
         super(authDAO);
         this.gameDAO = gameDAO;
     }
 
-    public ListGamesResult listGames(String authToken) throws UnauthorizedException {
+    public ListGamesResult listGames(String authToken) throws UnauthorizedException, DataAccessException {
         isAuthorized(authToken);
 
         return new ListGamesResult(gameDAO.getAllGames());
     }
 
-    public int createGame(CreateGameRequest request) throws BadRequestException, UnauthorizedException {
+    public int createGame(CreateGameRequest request) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (request.gameName() == null) {
             throw new BadRequestException();
         }
@@ -39,7 +40,7 @@ public class GameService extends Service {
         return gameID;
     }
 
-    public boolean joinGame(JoinGameRequest request) throws BadRequestException, UnauthorizedException, AlreadyTakenException {
+    public boolean joinGame(JoinGameRequest request) throws BadRequestException, UnauthorizedException, AlreadyTakenException, DataAccessException {
         if ((!"WHITE".equals(request.playerColor()) && !"BLACK".equals(request.playerColor())) || request.gameID() == 0) {
             throw new BadRequestException();
         }

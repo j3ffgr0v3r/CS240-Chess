@@ -63,7 +63,7 @@ public class UserServerHandler {
             userService.logout(authToken);
 
             ctx.status(200);
-        } catch (BadRequestException | UnauthorizedException e) {
+        } catch (BadRequestException | UnauthorizedException | DataAccessException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }

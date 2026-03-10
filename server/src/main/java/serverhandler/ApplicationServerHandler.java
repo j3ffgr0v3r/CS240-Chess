@@ -1,5 +1,10 @@
 package serverhandler;
 
+import java.util.Map;
+
+import com.google.gson.Gson;
+
+import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import service.GameService;
 import service.UserService;
@@ -15,10 +20,15 @@ public class ApplicationServerHandler {
     }
 
     public void clearApplication(Context ctx) {
-        userService.clear();
-        gameService.clear();
+        try {
+            userService.clear();
+            gameService.clear();
 
-        ctx.contentType("application/json");
-        ctx.status(200);
+            ctx.contentType("application/json");
+            ctx.status(200);
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
+        }
     }
 }

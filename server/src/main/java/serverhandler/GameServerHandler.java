@@ -5,6 +5,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import requestsandresults.creategame.CreateGameRequest;
 import requestsandresults.joingame.JoinGameRequest;
@@ -31,7 +32,7 @@ public class GameServerHandler {
 
             ctx.status(200);
             ctx.result(new Gson().toJson(result));
-        } catch (UnauthorizedException e) {
+        } catch (UnauthorizedException | DataAccessException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
@@ -49,7 +50,7 @@ public class GameServerHandler {
 
             ctx.status(200);
             ctx.result(new Gson().toJson(Map.of("gameID", gameID)));
-        } catch (BadRequestException | UnauthorizedException e) {
+        } catch (BadRequestException | UnauthorizedException | DataAccessException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }
@@ -66,7 +67,7 @@ public class GameServerHandler {
         try {
             gameService.joinGame(request);
             ctx.status(200);
-        } catch (BadRequestException | UnauthorizedException | AlreadyTakenException e) {
+        } catch (BadRequestException | UnauthorizedException | AlreadyTakenException | DataAccessException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));
         }

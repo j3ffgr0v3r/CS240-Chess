@@ -55,7 +55,7 @@ public class UserService extends Service {
         return new SessionCreationResult(username, createSession(username));
     }
 
-    public void logout(String authToken) throws BadRequestException, UnauthorizedException {
+    public void logout(String authToken) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (authToken == null) {
             throw new BadRequestException();
         }
@@ -65,7 +65,7 @@ public class UserService extends Service {
         authDAO.terminateSession(authToken);
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();
     }

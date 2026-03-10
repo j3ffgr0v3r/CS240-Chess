@@ -15,9 +15,12 @@ public abstract class MySQLDAO {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else ps.setString(i + 1, new Gson().toJson(param));
+                    if (param instanceof String p)
+                        ps.setString(i + 1, p);
+                    else if (param instanceof Integer p)
+                        ps.setInt(i + 1, p);
+                    else
+                        ps.setString(i + 1, new Gson().toJson(param));
                 }
                 ps.executeUpdate();
 
@@ -31,6 +34,30 @@ public abstract class MySQLDAO {
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
+    }
+
+    public ResultSet getFromTable(String statement, Object... params) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                for (int i = 0; i < params.length; i++) {
+                    Object param = params[i];
+                    if (param instanceof String p)
+                        ps.setString(i + 1, p);
+                    else if (param instanceof Integer p)
+                        ps.setInt(i + 1, p);
+                    else
+                        ps.setString(i + 1, new Gson().toJson(param));
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return null;
     }
 
     protected void configureDatabase(String[] createStatements) throws DataAccessException, DatabaseConnectionFailure, DatabaseCreationFailure {

@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 
 public abstract class Service {
@@ -10,7 +11,7 @@ public abstract class Service {
         this.authDAO = authDAO;
     }
 
-    protected void isAuthorized(String authToken) throws UnauthorizedException {
+    protected void isAuthorized(String authToken) throws UnauthorizedException, DataAccessException {
         if (authDAO.getSession(authToken) == null) {
             throw new UnauthorizedException();
         }

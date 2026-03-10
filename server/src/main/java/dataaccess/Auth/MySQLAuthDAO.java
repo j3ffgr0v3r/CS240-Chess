@@ -1,5 +1,9 @@
 package dataaccess.auth;
 
+import java.sql.SQLException;
+
+import com.google.gson.Gson;
+
 import dataaccess.DataAccessException;
 import dataaccess.MySQLDAO;
 import model.AuthData;
@@ -23,21 +27,26 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
 
     @Override
     public void createSession(AuthData authData) throws DataAccessException {
-        executeUpdate("insert into auth (authToken, authData) VALUES (?, ?);", authData.authToken(), authData);
+        executeUpdate("INSERT INTO auth (authToken, authData) VALUES (?, ?);", authData.authToken(), authData);
     }
 
     @Override
-    public AuthData getSession(String authData) {
+    public AuthData getSession(String authToken) throws DataAccessException {
+        try {
+            return new Gson().fromJson(getFromTable("SELECT authData FROM auth WHERE authToken = ?;", authToken).getString("authData"), AuthData.class);
+        }
+        catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void terminateSession(String authData) throws DataAccessException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void terminateSession(String authData) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }
