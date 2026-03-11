@@ -27,19 +27,13 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
 
     @Override
     public void createSession(AuthData authData) throws DataAccessException {
-        // TODO: use                 
-        // ResultSet rs = ps.getGeneratedKeys();
-            // if (rs.next()) {
-            //     return rs.getInt(1);
-            // }
-            // For Database to manage ID's
-        executeSQL("INSERT INTO auth (authToken, authData) VALUES (?, ?);", authData.authToken(), authData);
+        executeUpdate("INSERT INTO auth (authToken, authData) VALUES (?, ?);", authData.authToken(), authData);
     }
 
     @Override
     public AuthData getSession(String authToken) throws DataAccessException {
         try {
-            return new Gson().fromJson(executeSQL("SELECT authData FROM auth WHERE authToken = ?;", authToken).getString("authData"), AuthData.class);
+            return new Gson().fromJson(getFromTable("SELECT authData FROM auth WHERE authToken = ?;", authToken).getString("authData"), AuthData.class);
         }
         catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
