@@ -13,12 +13,10 @@ public abstract class MySQLDAO {
     private void formatSQLStatement(PreparedStatement ps, Object... params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
             Object param = params[i];
-            if (param instanceof String p) {
-                ps.setString(i + 1, p);
-            } else if (param instanceof Integer p) {
-                ps.setInt(i + 1, p);
-            } else {
-                ps.setString(i + 1, new Gson().toJson(param));
+            switch (param) {
+                case String p -> ps.setString(i + 1, p);
+                case Integer p -> ps.setInt(i + 1, p);
+                default -> ps.setString(i + 1, new Gson().toJson(param));
             }
         }
     }
