@@ -1,5 +1,6 @@
 package dataaccess.game;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -27,7 +28,15 @@ public class MySQLGameDAO extends MySQLDAO implements GameDAO {
 
     @Override
     public List<GameData> getAllGames() throws DataAccessException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<GameData> output = executeQuery(rs -> {
+            List<GameData> results = new ArrayList<>();
+            do {
+                results.add(new Gson().fromJson(rs.getString("gameData"), GameData.class));
+            } while (rs.next());
+            return results;
+        },
+                "SELECT gameData FROM games;");
+        return output;
     }
 
     @Override
