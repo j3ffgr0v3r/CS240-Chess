@@ -47,8 +47,8 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
     }
 
     @Override
-    public void terminateSession(String authData) throws DataAccessException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void terminateSession(String authToken) throws DataAccessException {
+        executeSQL("DELETE FROM auth WHERE authToken = ?;", authToken);
     }
 
     @Override
