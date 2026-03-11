@@ -2,6 +2,8 @@ package service;
 
 import java.util.UUID;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 import dataaccess.user.UserDAO;
@@ -34,7 +36,7 @@ public class UserService extends Service {
             throw new AlreadyTakenException();
         }
 
-        userDAO.createUser(new UserData(username, request.password(), request.email()));
+        userDAO.createUser(new UserData(username, BCrypt.hashpw(request.password(), BCrypt.gensalt()), request.email()));
 
         return new RegisterResult(username, createSession(username));
     }
@@ -48,7 +50,7 @@ public class UserService extends Service {
         String username = request.username();
         UserData user = userDAO.getUser(username);
 
-        if (user == null || (user.password() == null ? request.password() != null : !user.password().equals(request.password()))) {
+        if (user == null || (user.password() == null ? request.password() != null : !BCrypt.checkpw(request.password(), user.password()))) {
             throw new UnauthorizedException();
         }
 
