@@ -10,18 +10,23 @@ import com.google.gson.Gson;
 
 public abstract class MySQLDAO {
 
+    private void formatSQLStatement(PreparedStatement ps, Object... params) throws SQLException {
+        for (int i = 0; i < params.length; i++) {
+            Object param = params[i];
+            if (param instanceof String p) {
+                ps.setString(i + 1, p);
+            } else if (param instanceof Integer p) {
+                ps.setInt(i + 1, p);
+            } else {
+                ps.setString(i + 1, new Gson().toJson(param));
+            }
+        }
+    }
+
     protected int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    if (param instanceof String p)
-                        ps.setString(i + 1, p);
-                    else if (param instanceof Integer p)
-                        ps.setInt(i + 1, p);
-                    else
-                        ps.setString(i + 1, new Gson().toJson(param));
-                }
+                formatSQLStatement(ps, params);
                 ps.executeUpdate();
 
                 ResultSet rs = ps.getGeneratedKeys();
@@ -32,7 +37,7 @@ public abstract class MySQLDAO {
                 return 0;
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(String.format("Unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 
@@ -41,25 +46,17 @@ public abstract class MySQLDAO {
         T apply(ResultSet rs) throws SQLException;
     }
 
-    public <T> T executeQuery(SQLFunction< T> mapper, String statement, Object... params) throws DataAccessException {
+    public <T> T executeQuery(SQLFunction<T> mapper, String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    if (param instanceof String p)
-                        ps.setString(i + 1, p);
-                    else if (param instanceof Integer p)
-                        ps.setInt(i + 1, p);
-                    else
-                        ps.setString(i + 1, new Gson().toJson(param));
-                }
+                formatSQLStatement(ps, params);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return mapper.apply(rs);
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
