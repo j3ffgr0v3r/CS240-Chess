@@ -2,15 +2,16 @@ package dataaccess.game;
 
 import java.util.List;
 
+import dataaccess.DataAccessException;
 import model.GameData;
 
 public interface GameDAO {
 
-    public void clear();
+    public List<GameData> getAllGames() throws DataAccessException;
 
-    public List<GameData> getAllGames();
+    public void setGame(GameData newGame) throws DataAccessException;
 
-    public void setGame(GameData newGame);
+    public GameData getGame(int gameID) throws DataAccessException;
 
-    public GameData getGame(int gameID);
+    public void clear() throws DataAccessException;
 }
