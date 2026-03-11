@@ -33,12 +33,12 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO {
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        executeUpdate("INSERT INTO users (username, userData) VALUES (?, ?);", userData.username(), userData);
     }
 
     @Override
     public void clear() throws DataAccessException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        executeUpdate("TRUNCATE TABLE users;");
     }
 
 }
