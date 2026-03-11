@@ -43,6 +43,6 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        executeUpdate("TRUNCATE TABLE auth;");
     }
 }
