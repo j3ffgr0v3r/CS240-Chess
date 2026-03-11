@@ -1,21 +1,43 @@
 package dataaccess.user;
 
+import com.google.gson.Gson;
+
+import dataaccess.DataAccessException;
+import dataaccess.MySQLDAO;
 import model.UserData;
 
-public class MySQLUserDAO implements UserDAO {
+public class MySQLUserDAO extends MySQLDAO implements UserDAO {
+
+    private final String[] createStatements = {
+            """
+                        CREATE TABLE IF NOT EXISTS  users (
+                            `username` varchar(256) NOT NULL,
+                            `userData` TEXT DEFAULT NULL,
+                            PRIMARY KEY (`username`),
+                            INDEX(username)
+                        )
+                    """
+    };
+
+    public MySQLUserDAO() throws DataAccessException {
+        configureDatabase(createStatements);
+    }
 
     @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException {
+        String output = executeQuery(rs -> {
+            return rs.getString("userData");
+        }, "SELECT userData FROM users WHERE username = ?;", username);
+        return new Gson().fromJson(output, UserData.class);
+    }
+
+    @Override
+    public void createUser(UserData userData) throws DataAccessException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void createUser(UserData userData) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
