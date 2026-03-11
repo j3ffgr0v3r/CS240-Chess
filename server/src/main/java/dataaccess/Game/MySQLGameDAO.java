@@ -41,7 +41,7 @@ public class MySQLGameDAO extends MySQLDAO implements GameDAO {
 
     @Override
     public void setGame(GameData newGame) throws DataAccessException {
-        executeUpdate("INSERT INTO games (gameID, gameData) VALUES (?, ?);", newGame.gameID(), newGame);
+        executeUpdate("INSERT INTO games (gameID, gameData) VALUES (?, ?) ON DUPLICATE KEY UPDATE gameData = ?;", newGame.gameID(), newGame, newGame);
     }
 
     @Override
