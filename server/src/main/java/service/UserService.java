@@ -50,7 +50,7 @@ public class UserService extends Service {
         String username = request.username();
         UserData user = userDAO.getUser(username);
 
-        if (user == null || (user.password() == null ? request.password() != null : !BCrypt.checkpw(request.password(), user.password()))) {
+        if (user == null || !BCrypt.checkpw(request.password(), user.password())) {
             throw new UnauthorizedException();
         }
 
