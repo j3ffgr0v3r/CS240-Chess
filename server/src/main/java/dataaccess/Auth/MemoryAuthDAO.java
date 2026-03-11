@@ -3,6 +3,7 @@ package dataaccess.auth;
 import java.util.HashMap;
 import java.util.Map;
 
+import dataaccess.DataAccessException;
 import model.AuthData;
 
 public class MemoryAuthDAO implements AuthDAO {
@@ -14,7 +15,10 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void createSession(AuthData authData) {
+    public void createSession(AuthData authData) throws DataAccessException {
+        if (sessions.get(authData.authToken()) != null) {
+            throw new DataAccessException("Error: Duplicate entry attempt");
+        }
         sessions.put(authData.authToken(), authData);
     }
 
