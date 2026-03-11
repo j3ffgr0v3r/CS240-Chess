@@ -4,8 +4,8 @@ import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 import dataaccess.auth.MySQLAuthDAO;
 import dataaccess.game.GameDAO;
-import dataaccess.game.MemoryGameDAO;
-import dataaccess.user.MemoryUserDAO;
+import dataaccess.game.MySQLGameDAO;
+import dataaccess.user.MySQLUserDAO;
 import dataaccess.user.UserDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -28,8 +28,8 @@ public class Server {
     public Server() {
         try {
             authDAO = new MySQLAuthDAO();
-            userDAO = new MemoryUserDAO();
-            gameDAO = new MemoryGameDAO();
+            userDAO = new MySQLUserDAO();
+            gameDAO = new MySQLGameDAO();
 
             userService = new UserService(userDAO, authDAO);
             gameService = new GameService(gameDAO, authDAO);
