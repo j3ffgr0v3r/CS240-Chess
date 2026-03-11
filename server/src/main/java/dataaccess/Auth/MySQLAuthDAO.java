@@ -1,7 +1,5 @@
 package dataaccess.auth;
 
-import java.sql.SQLException;
-
 import com.google.gson.Gson;
 
 import dataaccess.DataAccessException;
@@ -32,17 +30,15 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
 
     @Override
     public AuthData getSession(String authToken) throws DataAccessException {
-        try {
-            return new Gson().fromJson(getFromTable("SELECT authData FROM auth WHERE authToken = ?;", authToken).getString("authData"), AuthData.class);
-        }
-        catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        String output = executeQuery(rs -> {
+            return rs.getString("authData");
+        }, "SELECT authData FROM auth WHERE authToken = ?;", authToken);
+        return new Gson().fromJson(output, AuthData.class);
     }
 
     @Override
     public void terminateSession(String authToken) throws DataAccessException {
-        executeSQL("DELETE FROM auth WHERE authToken = ?;", authToken);
+        executeUpdate("DELETE FROM auth WHERE authToken = ?;", authToken);
     }
 
     @Override

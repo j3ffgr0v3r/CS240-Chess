@@ -36,7 +36,12 @@ public abstract class MySQLDAO {
         }
     }
 
-    public ResultSet getFromTable(String statement, Object... params) throws DataAccessException {
+    @FunctionalInterface
+    public interface SQLFunction<T> {
+        T apply(ResultSet rs) throws SQLException;
+    }
+
+    public <T> T executeQuery(SQLFunction< T> mapper, String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 for (int i = 0; i < params.length; i++) {
@@ -50,7 +55,7 @@ public abstract class MySQLDAO {
                 }
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return rs;
+                        return mapper.apply(rs);
                     }
                 }
             }
