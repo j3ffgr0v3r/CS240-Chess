@@ -1,6 +1,7 @@
 package dataaccess.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -36,7 +37,7 @@ public class MySQLGameDAO extends MySQLDAO implements GameDAO {
             return results;
         },
                 "SELECT gameData FROM games;");
-        return output;
+        return output != null ? output : Collections.emptyList();
     }
 
     @Override
