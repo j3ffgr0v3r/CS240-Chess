@@ -24,8 +24,8 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void terminateSession(String authData) {
-        sessions.remove(authData);
+    public void terminateSession(String authToken) {
+        sessions.remove(authToken);
     }
 
     @Override
