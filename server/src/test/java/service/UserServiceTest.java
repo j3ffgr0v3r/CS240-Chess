@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 
 import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
@@ -82,7 +83,7 @@ public class UserServiceTest {
     @Test
     void testLogin() throws DataAccessException {
         try {
-            userDAO.createUser(new UserData("username", "password", "email"));
+            userDAO.createUser(new UserData("username", BCrypt.hashpw("password", BCrypt.gensalt()), "email"));
 
             assertTrue(userService.login(new SessionCreationRequest("username", "password")).username() == "username");
 
