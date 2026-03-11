@@ -3,9 +3,25 @@ package dataaccess.game;
 import java.util.List;
 
 import dataaccess.DataAccessException;
+import dataaccess.MySQLDAO;
 import model.GameData;
 
-public class MySQLGameDAO implements GameDAO {
+public class MySQLGameDAO extends MySQLDAO implements GameDAO {
+
+    private final String[] createStatements = {
+            """
+                        CREATE TABLE IF NOT EXISTS  auth (
+                            `gameID` INT NOT NULL,
+                            `gameData` TEXT DEFAULT NULL,
+                            PRIMARY KEY (`gameID`),
+                            INDEX(gameID)
+                        )
+                    """
+    };
+
+    public MySQLGameDAO() throws DataAccessException {
+        configureDatabase(createStatements);
+    }
 
     @Override
     public List<GameData> getAllGames() throws DataAccessException {
