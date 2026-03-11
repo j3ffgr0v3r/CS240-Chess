@@ -10,7 +10,7 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO {
 
     private final String[] createStatements = {
             """
-                        CREATE TABLE IF NOT EXISTS  auth (
+                        CREATE TABLE IF NOT EXISTS auth (
                             `authToken` varchar(256) NOT NULL,
                             `authData` TEXT DEFAULT NULL,
                             PRIMARY KEY (`authToken`),

@@ -10,7 +10,7 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO {
 
     private final String[] createStatements = {
             """
-                        CREATE TABLE IF NOT EXISTS  users (
+                        CREATE TABLE IF NOT EXISTS users (
                             `username` varchar(256) NOT NULL,
                             `userData` TEXT DEFAULT NULL,
                             PRIMARY KEY (`username`),
