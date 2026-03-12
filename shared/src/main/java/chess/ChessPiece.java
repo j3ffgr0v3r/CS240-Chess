@@ -57,8 +57,6 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
 
         List<Behavior> behaviors = new ArrayList<>();
 
