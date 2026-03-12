@@ -3,6 +3,7 @@ package dataaccess.user;
 import java.util.HashMap;
 import java.util.Map;
 
+import dataaccess.DataAccessException;
 import model.UserData;
 
 public class MemoryUserDAO implements UserDAO {
@@ -15,11 +16,15 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) {
+
         return users.get(username);
     }
 
     @Override
-    public void createUser(UserData userData) {
+    public void createUser(UserData userData) throws DataAccessException {
+        if (users.get(userData.username()) != null) {
+            throw new DataAccessException("Error: Duplicate entry attempt");
+        }
         users.put(userData.username(), userData);
     }
 
