@@ -24,6 +24,16 @@ public abstract class GameDAOTest {
     }
 
     @Test
+    void testUpdateGame() throws DataAccessException {
+        GameData gameData = new GameData(42, "white", "black", "gameName", null);
+        gameDAO.setGame(gameData);
+        assertTrue(gameDAO.getGame(42).equals(gameData));
+        GameData newGameData = new GameData(42, "newWhite", "newBlack", "newGameName", null);
+        gameDAO.setGame(newGameData);
+        assertTrue(gameDAO.getGame(42).equals(newGameData));
+    }
+
+    @Test
     void testGetGame_NotFound() throws DataAccessException {
         assertTrue(gameDAO.getGame(-1) == null);
     }
