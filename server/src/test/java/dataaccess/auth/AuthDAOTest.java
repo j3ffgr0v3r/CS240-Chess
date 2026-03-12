@@ -25,7 +25,7 @@ public abstract class AuthDAOTest {
     }
 
     @Test
-    void testCreateSession_Duplicates() throws DataAccessException {
+    void testCreateSessionUserDuplicates() throws DataAccessException {
         AuthData authData = new AuthData("authToken", "username");
         authDAO.createSession(authData);
         Exception exception = assertThrows(DataAccessException.class, () -> authDAO.createSession(authData));
@@ -33,7 +33,7 @@ public abstract class AuthDAOTest {
     }
 
     @Test
-    void testGetSession_NotFound() throws DataAccessException {
+    void testGetSessionUserNotFound() throws DataAccessException {
         assertTrue(authDAO.getSession("doesNotExist") == null);
     }
 

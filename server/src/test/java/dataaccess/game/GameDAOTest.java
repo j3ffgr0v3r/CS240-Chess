@@ -34,7 +34,7 @@ public abstract class GameDAOTest {
     }
 
     @Test
-    void testGetGame_NotFound() throws DataAccessException {
+    void testGetGameUserNotFound() throws DataAccessException {
         assertTrue(gameDAO.getGame(-1) == null);
     }
 }

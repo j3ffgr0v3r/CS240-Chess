@@ -26,7 +26,7 @@ public abstract class UserDAOTest {
     }
 
     @Test
-    void testCreateUser_Duplicates() throws DataAccessException {
+    void testCreateUserUserDuplicates() throws DataAccessException {
         UserData userData = new UserData("username", BCrypt.hashpw("password", BCrypt.gensalt()), "email");
         userDAO.createUser(userData);
         Exception exception = assertThrows(DataAccessException.class, () -> userDAO.createUser(userData));
@@ -34,7 +34,7 @@ public abstract class UserDAOTest {
     }
 
     @Test
-    void testGetUser_NotFound() throws DataAccessException {
+    void testGetUserUserNotFound() throws DataAccessException {
         assertTrue(userDAO.getUser("doesNotExist") == null);
     }
 }
