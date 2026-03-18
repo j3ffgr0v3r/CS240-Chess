@@ -51,7 +51,7 @@ public class ChessClient {
         }
     }
 
-    public void printMenu(final UIState state) {
+    private void printMenu(final UIState state) {
         for (final MenuOption option : stateMenuOptions.get(state)) {
             System.out.println(option.usage);
         }
