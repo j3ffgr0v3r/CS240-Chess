@@ -53,10 +53,11 @@ public class ChessClient {
                 printMenu(uiState);
                 final String line = scanner.nextLine();
                 System.out.println();
-                if (validateInput(uiState, line)) {
-                    System.out.println("That's really a command! Yay!");
-                } else {
-                    System.out.println("Bruh, that's not valid");
+                try {
+                    getCommand(uiState, line.trim().split("\\s+"));
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println();
                 }
             }
         }
@@ -69,9 +70,26 @@ public class ChessClient {
         System.out.println();
     }
 
-    private boolean validateInput(final UIState state, String line) {
-        MenuOption command = stateMenuOptions.get(state).stream().filter(option -> option.usage().split("\\s+")[0].equals(line.split("\\s+")[0])).findFirst().orElse(null);
-        return command != null;
+    private MultiStringConsumer getCommand(final UIState state, String... args) throws IllegalArgumentException {
+        if (args.length <= 0 || args[0].isEmpty()) {
+            return null;
+        }
+
+        MenuOption command = stateMenuOptions.get(state).stream().filter(option -> option.usage().split("\\s+")[0].equals(args[0])).findFirst().orElse(null);
+
+        if (command == null) {
+            throw new IllegalArgumentException("Error: Unknown command '" + args[0] + "'.  Please select a valid command from the menu. Enter 'help' for more information.");
+        }
+        
+        String[] commandFormat = command.usage().split("-")[0].split("\\s+");
+
+        if (args.length < commandFormat.length) {
+            throw new IllegalArgumentException("Error: Missing Arguments. Command argument format: " + command.usage().split("-")[0]);
+        } else if (args.length > commandFormat.length) {
+            throw new IllegalArgumentException("Error: Positional argument '" + args[commandFormat.length] + "' not recognized. Command argument format: " + command.usage().split("-")[0]);
+        }
+
+        return command.func();
     }
 
     private void register(String username, String email, String password) {
