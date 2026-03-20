@@ -14,6 +14,9 @@ import dataaccess.game.GameDAO;
 import dataaccess.game.MemoryGameDAO;
 import model.AuthData;
 import model.GameData;
+import model.exceptions.AlreadyTakenException;
+import model.exceptions.BadRequestException;
+import model.exceptions.UnauthorizedException;
 import requestsandresults.creategame.CreateGameRequest;
 import requestsandresults.joingame.JoinGameRequest;
 

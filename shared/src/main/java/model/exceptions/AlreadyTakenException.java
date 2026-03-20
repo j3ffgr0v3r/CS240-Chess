@@ -1,4 +1,4 @@
-package service;
+package model.exceptions;
 
 public class AlreadyTakenException extends ServiceException {
 

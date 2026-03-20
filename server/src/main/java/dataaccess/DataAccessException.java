@@ -1,6 +1,6 @@
 package dataaccess;
 
-import serverhandler.HTTPException;
+import model.exceptions.HTTPException;
 
 /**
  * Indicates there was an error connecting to the database

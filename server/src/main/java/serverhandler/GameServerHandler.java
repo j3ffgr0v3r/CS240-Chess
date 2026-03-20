@@ -7,13 +7,13 @@ import com.google.gson.JsonObject;
 
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
+import model.exceptions.AlreadyTakenException;
+import model.exceptions.BadRequestException;
+import model.exceptions.UnauthorizedException;
 import requestsandresults.creategame.CreateGameRequest;
 import requestsandresults.joingame.JoinGameRequest;
 import requestsandresults.listgames.ListGamesResult;
-import service.AlreadyTakenException;
-import service.BadRequestException;
 import service.GameService;
-import service.UnauthorizedException;
 
 public class GameServerHandler {
 

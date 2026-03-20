@@ -12,6 +12,7 @@ public class ChessClient {
     private enum UIState {
         PRELOGIN, POSTLOGIN, GAMEPLAY
     }
+    final UIState uiState = UIState.PRELOGIN;
 
     @FunctionalInterface
     interface MultiStringConsumer {
@@ -47,14 +48,13 @@ public class ChessClient {
 
     public void run() {
         final boolean running = true;
-        final UIState uiState = UIState.PRELOGIN;
         try (Scanner scanner = new Scanner(System.in)) {
             while (running) {
-                printMenu(uiState);
+                printMenu();
                 final String line = scanner.nextLine();
                 System.out.println();
                 try {
-                    getCommand(uiState, line.trim().split("\\s+"));
+                    getCommand(line.trim().split("\\s+"));
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage());
                     System.out.println();
@@ -63,19 +63,19 @@ public class ChessClient {
         }
     }
 
-    private void printMenu(final UIState state) {
-        for (final MenuOption option : stateMenuOptions.get(state)) {
+    private void printMenu() {
+        for (final MenuOption option : stateMenuOptions.get(uiState)) {
             System.out.println(option.usage);
         }
         System.out.println();
     }
 
-    private MultiStringConsumer getCommand(final UIState state, String... args) throws IllegalArgumentException {
+    private MultiStringConsumer getCommand(String... args) throws IllegalArgumentException {
         if (args.length <= 0 || args[0].isEmpty()) {
             return null;
         }
 
-        MenuOption command = stateMenuOptions.get(state).stream().filter(option -> option.usage().split("\\s+")[0].equals(args[0])).findFirst().orElse(null);
+        MenuOption command = stateMenuOptions.get(uiState).stream().filter(option -> option.usage().split("\\s+")[0].equals(args[0])).findFirst().orElse(null);
 
         if (command == null) {
             throw new IllegalArgumentException("Error: Unknown command '" + args[0] + "'.  Please select a valid command from the menu. Enter 'help' for more information.");
@@ -93,6 +93,6 @@ public class ChessClient {
     }
 
     private void register(String username, String email, String password) {
-
+        
     }
 }

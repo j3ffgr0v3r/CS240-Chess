@@ -1,6 +1,4 @@
-package service;
-
-import serverhandler.HTTPException;
+package model.exceptions;
 
 public class ServiceException extends HTTPException {
     

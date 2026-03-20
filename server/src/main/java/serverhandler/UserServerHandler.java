@@ -6,13 +6,13 @@ import com.google.gson.Gson;
 
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
+import model.exceptions.AlreadyTakenException;
+import model.exceptions.BadRequestException;
+import model.exceptions.UnauthorizedException;
 import requestsandresults.register.RegisterRequest;
 import requestsandresults.register.RegisterResult;
 import requestsandresults.sessioncreation.SessionCreationRequest;
 import requestsandresults.sessioncreation.SessionCreationResult;
-import service.AlreadyTakenException;
-import service.BadRequestException;
-import service.UnauthorizedException;
 import service.UserService;
 
 public class UserServerHandler {

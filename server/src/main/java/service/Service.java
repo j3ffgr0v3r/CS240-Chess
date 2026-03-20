@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
+import model.exceptions.UnauthorizedException;
 
 public abstract class Service {
 

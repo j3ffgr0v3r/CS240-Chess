@@ -14,6 +14,9 @@ import dataaccess.user.MemoryUserDAO;
 import dataaccess.user.UserDAO;
 import model.AuthData;
 import model.UserData;
+import model.exceptions.AlreadyTakenException;
+import model.exceptions.BadRequestException;
+import model.exceptions.UnauthorizedException;
 import requestsandresults.register.RegisterRequest;
 import requestsandresults.sessioncreation.SessionCreationRequest;
 

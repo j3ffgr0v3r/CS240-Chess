@@ -1,4 +1,4 @@
-package service;
+package model.exceptions;
 
 public class UnauthorizedException extends ServiceException {
 

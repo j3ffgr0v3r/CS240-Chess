@@ -1,4 +1,4 @@
-package serverhandler;
+package model.exceptions;
 
 public class HTTPException extends Exception {
 
