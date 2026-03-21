@@ -29,12 +29,16 @@ public class ClientCommunicator {
         return handleResponse(response, responseType);
     }
 
-    protected Result get(Request requestModel, String endpoint, String authToken) {
-        return null;
+    protected <T extends Result> T get(Request requestModel, String endpoint, String authToken, Class<T> responseType) throws HTTPException {
+        var request = buildRequest("GET", endpoint, authToken, requestModel);
+        var response = sendRequest(request);
+        return handleResponse(response, responseType);
     }
 
-    protected Result put(Request requestModel, String endpoint, String authToken) {
-        return null;
+    protected <T extends Result> T put(Request requestModel, String endpoint, String authToken, Class<T> responseType) throws HTTPException {
+        var request = buildRequest("PUT", endpoint, authToken, requestModel);
+        var response = sendRequest(request);
+        return handleResponse(response, responseType);
     }
 
     protected void delete(Request requestModel, String endpoint, String authToken) throws HTTPException {

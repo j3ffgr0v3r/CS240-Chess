@@ -13,9 +13,11 @@ public class ChessClient {
     private final ServerFacade server;
 
     private String username = null;
+
     private enum UIState {
         PRELOGIN, POSTLOGIN, GAMEPLAY
     }
+
     UIState uiState = UIState.PRELOGIN;
 
     private record MenuOption(String usage, Consumer<String[]> func) {
@@ -27,7 +29,8 @@ public class ChessClient {
             new MenuOption("quit - quit the program", null),
             new MenuOption("help - see more information about this menu", null));
 
-    private final List<MenuOption> postLoginMenu = List.of(new MenuOption("create <NAME> - start a new game", null),
+    private final List<MenuOption> postLoginMenu = List.of(
+            new MenuOption("create <NAME> - start a new game", (params) -> createGame(params[1])),
             new MenuOption("list - list all active games", null),
             new MenuOption("join <ID> [WHITE|BLACK] - join a game as selected team", null),
             new MenuOption("observe <ID> - spectate an active game", null),
@@ -79,18 +82,21 @@ public class ChessClient {
             return null;
         }
 
-        MenuOption command = stateMenuOptions.get(uiState).stream().filter(option -> option.usage().split("\\s+")[0].equals(args[0])).findFirst().orElse(null);
+        MenuOption command = stateMenuOptions.get(uiState).stream().filter(option -> option.usage().split("\\s+")[0].equals(args[0])).findFirst()
+                .orElse(null);
 
         if (command == null) {
-            throw new IllegalArgumentException("Error: Unknown command '" + args[0] + "'.  Please select a valid command from the menu. Enter 'help' for more information.");
+            throw new IllegalArgumentException(
+                    "Error: Unknown command '" + args[0] + "'.  Please select a valid command from the menu. Enter 'help' for more information.");
         }
-        
+
         String[] commandFormat = command.usage().split("-")[0].split("\\s+");
 
         if (args.length < commandFormat.length) {
             throw new IllegalArgumentException("Error: Missing Arguments. Command argument format: " + command.usage().split("-")[0]);
         } else if (args.length > commandFormat.length) {
-            throw new IllegalArgumentException("Error: Positional argument '" + args[commandFormat.length] + "' not recognized. Command argument format: " + command.usage().split("-")[0]);
+            throw new IllegalArgumentException("Error: Positional argument '" + args[commandFormat.length]
+                    + "' not recognized. Command argument format: " + command.usage().split("-")[0]);
         }
 
         return command.func();
@@ -119,6 +125,15 @@ public class ChessClient {
             server.logout();
             this.username = null;
             uiState = UIState.PRELOGIN;
+        } catch (HTTPException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void createGame(String gameName) {
+        try {
+            String gameID = server.createGame(gameName);
+            System.out.println("Game successfully started with ID: " + gameID);
         } catch (HTTPException e) {
             System.out.println(e.getMessage());
         }

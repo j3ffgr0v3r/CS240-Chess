@@ -1,8 +1,10 @@
 package client;
 
 import model.exceptions.HTTPException;
+import model.requests.CreateGameRequest;
 import model.requests.RegisterRequest;
 import model.requests.SessionCreationRequest;
+import model.results.GameCreationResult;
 import model.results.RegisterResult;
 import model.results.Result;
 import model.results.SessionCreationResult;
@@ -33,5 +35,11 @@ public class ServerFacade {
     public void logout() throws HTTPException {
         communicator.delete(null, "/session", authToken);
         this.authToken = null;
+    }
+
+    public String createGame(String gameName) throws HTTPException {
+        CreateGameRequest request = new CreateGameRequest(authToken, gameName);
+        GameCreationResult response = communicator.post(request, "/game", authToken, GameCreationResult.class);
+        return response.gameID();
     }
 }
