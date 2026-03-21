@@ -1,5 +1,6 @@
 package client;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -71,7 +72,9 @@ public class ClientCommunicator {
     private HttpResponse<String> sendRequest(HttpRequest request) throws HTTPException {
         try {
             return client.send(request, BodyHandlers.ofString());
-        } catch (IOException | InterruptedException ex) {
+        } catch (ConnectException ex) {
+            throw new HTTPException(400, "Error: unable to connect with server. Please check your network connection and try again.");
+        }catch (IOException | InterruptedException ex) {
             throw new HTTPException(500, ex.getMessage());
         }
     }

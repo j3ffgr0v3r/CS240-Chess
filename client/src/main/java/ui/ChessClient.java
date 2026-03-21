@@ -1,5 +1,7 @@
 package ui;
 
+import static ui.EscapeSequences.ERASE_SCREEN;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,6 +78,7 @@ public class ChessClient {
                 printMenu();
                 final String line = scanner.nextLine();
                 System.out.println();
+                System.out.print(ERASE_SCREEN);
                 try {
                     String[] params = line.trim().split("\\s+");
                     Consumer<String[]> command = getCommand(params);
