@@ -11,7 +11,6 @@ import model.requests.SessionCreationRequest;
 import model.results.GameCreationResult;
 import model.results.ListGamesResult;
 import model.results.RegisterResult;
-import model.results.Result;
 import model.results.SessionCreationResult;
 
 public class ServerFacade {
