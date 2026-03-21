@@ -1,5 +1,6 @@
 package ui;
 
+
 import client.ServerCommunicationFailure;
 import model.exceptions.AlreadyTakenException;
 import model.exceptions.BadRequestException;

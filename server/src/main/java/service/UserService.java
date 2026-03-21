@@ -12,10 +12,10 @@ import model.UserData;
 import model.exceptions.AlreadyTakenException;
 import model.exceptions.BadRequestException;
 import model.exceptions.UnauthorizedException;
-import requestsandresults.register.RegisterRequest;
-import requestsandresults.register.RegisterResult;
-import requestsandresults.sessioncreation.SessionCreationRequest;
-import requestsandresults.sessioncreation.SessionCreationResult;
+import model.requests.RegisterRequest;
+import model.requests.SessionCreationRequest;
+import model.results.RegisterResult;
+import model.results.SessionCreationResult;
 
 public class UserService extends Service {
 

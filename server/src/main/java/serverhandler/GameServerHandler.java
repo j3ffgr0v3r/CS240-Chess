@@ -10,9 +10,9 @@ import io.javalin.http.Context;
 import model.exceptions.AlreadyTakenException;
 import model.exceptions.BadRequestException;
 import model.exceptions.UnauthorizedException;
-import requestsandresults.creategame.CreateGameRequest;
-import requestsandresults.joingame.JoinGameRequest;
-import requestsandresults.listgames.ListGamesResult;
+import model.requests.CreateGameRequest;
+import model.requests.JoinGameRequest;
+import model.results.ListGamesResult;
 import service.GameService;
 
 public class GameServerHandler {

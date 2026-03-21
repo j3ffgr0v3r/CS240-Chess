@@ -17,8 +17,8 @@ import model.UserData;
 import model.exceptions.AlreadyTakenException;
 import model.exceptions.BadRequestException;
 import model.exceptions.UnauthorizedException;
-import requestsandresults.register.RegisterRequest;
-import requestsandresults.sessioncreation.SessionCreationRequest;
+import model.requests.RegisterRequest;
+import model.requests.SessionCreationRequest;
 
 public class UserServiceTest {
 

@@ -3,23 +3,22 @@ package ui;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 import client.ServerCommunicationFailure;
+import model.exceptions.AlreadyTakenException;
+import model.exceptions.BadRequestException;
 
 public class ChessClient {
     private final ServerFacade server;
 
+    private String username = null;
     private enum UIState {
         PRELOGIN, POSTLOGIN, GAMEPLAY
     }
-    final UIState uiState = UIState.PRELOGIN;
+    UIState uiState = UIState.PRELOGIN;
 
-    @FunctionalInterface
-    interface MultiStringConsumer {
-        void accept(String... strings);
-    }
-
-    private record MenuOption(String usage, MultiStringConsumer func) {
+    private record MenuOption(String usage, Consumer<String[]> func) {
     }
 
     private final List<MenuOption> preLoginMenu = List.of(
@@ -38,7 +37,8 @@ public class ChessClient {
 
     private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game", null));
 
-    private final Map<UIState, List<MenuOption>> stateMenuOptions = Map.of(UIState.PRELOGIN, preLoginMenu,
+    private final Map<UIState, List<MenuOption>> stateMenuOptions = Map.of(
+            UIState.PRELOGIN, preLoginMenu,
             UIState.POSTLOGIN, postLoginMenu,
             UIState.GAMEPLAY, gameplayMenu);
 
@@ -54,7 +54,8 @@ public class ChessClient {
                 final String line = scanner.nextLine();
                 System.out.println();
                 try {
-                    getCommand(line.trim().split("\\s+"));
+                    String[] params = line.trim().split("\\s+");
+                    getCommand(params).accept(params);
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage());
                     System.out.println();
@@ -70,7 +71,7 @@ public class ChessClient {
         System.out.println();
     }
 
-    private MultiStringConsumer getCommand(String... args) throws IllegalArgumentException {
+    private Consumer<String[]> getCommand(String... args) throws IllegalArgumentException {
         if (args.length <= 0 || args[0].isEmpty()) {
             return null;
         }
@@ -93,6 +94,11 @@ public class ChessClient {
     }
 
     private void register(String username, String email, String password) {
-        
+        try {
+            this.username = server.register(username, email, password);
+            uiState = UIState.POSTLOGIN;
+        } catch (BadRequestException | AlreadyTakenException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
