@@ -30,8 +30,8 @@ public final class ChessBoard {
         Iterator<ChessPiece> pieces = board.iterator();
         String[][] boardDisplay = new String[10][10];
 
-        boardDisplay[0] = header;
-        boardDisplay[9] = header;        
+        boardDisplay[0] = header.clone();
+        boardDisplay[9] = header.clone();        
 
         for (int row = 1; row < 9; row ++) {
             boardDisplay[row][0] = borderBGColor +  " %s ".formatted(String.valueOf(row));
@@ -44,6 +44,10 @@ public final class ChessBoard {
 
         if (side == ChessGame.TeamColor.WHITE) {
             Collections.reverse(Arrays.asList(boardDisplay));
+        } else if (side == ChessGame.TeamColor.BLACK) {
+            for (String[] row : boardDisplay) {
+                Collections.reverse(Arrays.asList(row).subList(1, row.length-1));
+            }
         }
 
         return Arrays.stream(boardDisplay).map(row -> Arrays.stream(row).collect(Collectors.joining())).collect(Collectors.joining("\n"))+RESET_BG_COLOR+RESET_TEXT_COLOR;
