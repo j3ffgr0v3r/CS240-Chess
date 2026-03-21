@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 import client.ServerCommunicationFailure;
+import client.ServerFacade;
 import model.exceptions.AlreadyTakenException;
 import model.exceptions.BadRequestException;
 

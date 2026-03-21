@@ -1,3 +1,4 @@
+package client;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 
 import model.exceptions.HTTPException;
 import model.requests.Request;
+import model.results.RegisterResult;
 import model.results.Result;
 
 public class ClientCommunicator {
@@ -21,10 +23,23 @@ public class ClientCommunicator {
         serverUrl = url;
     }
 
-    protected Result post(Request request) {
+    protected Result post(Request requestModel, String endpoint) throws HTTPException {
+        var request = buildRequest("POST", endpoint, requestModel);
+        var response = sendRequest(request);
+        return handleResponse(response, RegisterResult.class);
+    }
+
+    protected Result get(Request request) {
         return null;
     }
 
+    protected Result put(Request request) {
+        return null;
+    }
+
+    protected Result delete(Request request) {
+        return null;
+    }
 
 
     private HttpRequest buildRequest(String method, String path, Object body) {
