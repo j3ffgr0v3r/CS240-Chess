@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -7,12 +8,14 @@ import java.util.function.Consumer;
 
 import client.ServerCommunicationFailure;
 import client.ServerFacade;
+import model.GameData;
 import model.exceptions.HTTPException;
 
 public class ChessClient {
     private final ServerFacade server;
 
     private String username = null;
+    private List<Integer> gameIDs = new ArrayList<>();
 
     private enum UIState {
         PRELOGIN, POSTLOGIN, GAMEPLAY
@@ -31,7 +34,7 @@ public class ChessClient {
 
     private final List<MenuOption> postLoginMenu = List.of(
             new MenuOption("create <NAME> - start a new game", (params) -> createGame(params[1])),
-            new MenuOption("list - list all active games", null),
+            new MenuOption("list - list all active games", (params) -> listGames()),
             new MenuOption("join <ID> [WHITE|BLACK] - join a game as selected team", null),
             new MenuOption("observe <ID> - spectate an active game", null),
             new MenuOption("logout - logout from the current user", (params) -> logout()),
@@ -133,7 +136,24 @@ public class ChessClient {
     private void createGame(String gameName) {
         try {
             int gameID = server.createGame(gameName);
-            System.out.println("Game successfully started with ID: " + gameID);
+            System.out.println("Game" + gameName + "successfully started!\n");
+        } catch (HTTPException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void listGames() {
+        try {
+            List<GameData> games = server.listGames();
+            gameIDs.clear();
+            int counter = 0;
+            for (final GameData game : games) {
+                gameIDs.add(game.gameID());
+                System.out.println(String.format("Game %d: %s - White Player: %s - Black Player %s", ++counter, game.gameName(),
+                        game.whiteUsername() == null ? "--NONE--" : game.whiteUsername(),
+                        game.blackUsername() == null ? "--NONE--" : game.blackUsername()));
+            }
+            System.out.println();
         } catch (HTTPException e) {
             System.out.println(e.getMessage());
         }

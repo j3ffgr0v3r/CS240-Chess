@@ -1,10 +1,14 @@
 package client;
 
+import java.util.List;
+
+import model.GameData;
 import model.exceptions.HTTPException;
 import model.requests.CreateGameRequest;
 import model.requests.RegisterRequest;
 import model.requests.SessionCreationRequest;
 import model.results.GameCreationResult;
+import model.results.ListGamesResult;
 import model.results.RegisterResult;
 import model.results.Result;
 import model.results.SessionCreationResult;
@@ -41,5 +45,10 @@ public class ServerFacade {
         CreateGameRequest request = new CreateGameRequest(authToken, gameName);
         GameCreationResult response = communicator.post(request, "/game", authToken, GameCreationResult.class);
         return response.gameID();
+    }
+
+    public List<GameData> listGames() throws HTTPException {
+        ListGamesResult response = communicator.get(null, "/game", authToken, ListGamesResult.class);
+        return response.games();
     }
 }
