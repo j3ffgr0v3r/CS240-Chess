@@ -5,5 +5,16 @@
     ],
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.format.settings.url": "eclipse-formatter.xml",
-    "chatgpt.commentCodeLensEnabled": false
+    "chatgpt.commentCodeLensEnabled": false,
+    "terminal.integrated.profiles.windows": {
+    "PowerShell UTF-8": {
+      "source": "PowerShell",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new(); chcp 65001"
+      ]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell UTF-8",
 }

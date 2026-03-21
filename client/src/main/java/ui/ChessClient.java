@@ -14,6 +14,7 @@ import model.exceptions.HTTPException;
 
 public class ChessClient {
     private final ServerFacade server;
+    private ChessBoard board;
 
     private String username = null;
     private final List<Integer> gameIDs = new ArrayList<>();
@@ -38,16 +39,21 @@ public class ChessClient {
             new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()));
 
     private final List<MenuOption> postLoginMenu = List.of(
-            new MenuOption("create <NAME> - start a new game", "Begin a new round of chess with the given name to play against an opponent.", (params) -> createGame(params[1])),
-            new MenuOption("list - list all active games", "See what games are available to play or watch, and who is signed up to play them.", (params) -> listGames()),
-            new MenuOption("join {ID} [WHITE|BLACK] - join a game as selected team", "Join the selected chess game under the given play color. Note that the selected team must be available.",
+            new MenuOption("create <NAME> - start a new game", "Begin a new round of chess with the given name to play against an opponent.",
+                    (params) -> createGame(params[1])),
+            new MenuOption("list - list all active games", "See what games are available to play or watch, and who is signed up to play them.",
+                    (params) -> listGames()),
+            new MenuOption("join {ID} [WHITE|BLACK] - join a game as selected team",
+                    "Join the selected chess game under the given play color. Note that the selected team must be available.",
                     (params) -> joinGame(Integer.parseInt(params[1]), params[2])),
-            new MenuOption("observe {ID} - spectate an active game", "Watch the selected chess game without playing.", (params) -> observeGame(Integer.parseInt(params[1]))),
+            new MenuOption("observe {ID} - spectate an active game", "Watch the selected chess game without playing.",
+                    (params) -> observeGame(Integer.parseInt(params[1]))),
             new MenuOption("logout - logout from the current user", "Sign out of your account and return to the login menu.", (params) -> logout()),
             new MenuOption("quit - quit the program", "If you're done playing chess, use this command to close this program.", (params) -> quit()),
             new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()));
 
-    private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game", "Stop participating in this game and return to the game selection menu.", (params) -> leaveGame()));
+    private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game",
+            "Stop participating in this game and return to the game selection menu.", (params) -> leaveGame()));
 
     private final Map<UIState, List<MenuOption>> stateMenuOptions = Map.of(
             UIState.PRELOGIN, preLoginMenu,
@@ -56,11 +62,17 @@ public class ChessClient {
 
     public ChessClient(final String serverUrl) throws ServerCommunicationFailure {
         server = new ServerFacade(serverUrl);
+        chess.ChessBoard gameBoard = new chess.ChessBoard();
+        gameBoard.resetBoard();
+        board = new ChessBoard(gameBoard);
     }
 
     public void run() {
         try (Scanner scanner = new Scanner(System.in)) {
             while (uiState != UIState.QUIT) {
+                if (uiState == UIState.GAMEPLAY) {
+                    System.out.println(board);
+                }
                 printMenu();
                 final String line = scanner.nextLine();
                 System.out.println();
@@ -134,9 +146,9 @@ public class ChessClient {
 
     private void help() {
         System.out.println("""
-            Welcome to Chess! Below are the possible commands you can enter to begin playing, followed by a brief description of what they do. \
-            Simply enter a command keyword, followed by the acceptable parameters.\n Parameters surrounded by <> accept any input, \
-            {} take only numbers, and [] accept only the options listed within.\n""");
+                Welcome to Chess! Below are the possible commands you can enter to begin playing, followed by a brief description of what they do. \
+                Simply enter a command keyword, followed by the acceptable parameters.\n Parameters surrounded by <> accept any input, \
+                {} take only numbers, and [] accept only the options listed within.\n""");
         for (final MenuOption option : stateMenuOptions.get(uiState)) {
             System.out.println(option.usage.split("\\s+")[0] + " - " + option.description);
         }
