@@ -16,10 +16,10 @@ public class ChessClient {
     private final ServerFacade server;
 
     private String username = null;
-    private List<Integer> gameIDs = new ArrayList<>();
+    private final List<Integer> gameIDs = new ArrayList<>();
 
     private enum UIState {
-        PRELOGIN, POSTLOGIN, GAMEPLAY
+        QUIT, PRELOGIN, POSTLOGIN, GAMEPLAY
     }
 
     UIState uiState = UIState.PRELOGIN;
@@ -30,7 +30,7 @@ public class ChessClient {
     private final List<MenuOption> preLoginMenu = List.of(
             new MenuOption("register <USERNAME> <EMAIL> <PASSWORD> - register a new account", (params) -> register(params[1], params[2], params[3])),
             new MenuOption("login <USERNAME> <PASSWORD> - sign in to play", (params) -> login(params[1], params[2])),
-            new MenuOption("quit - quit the program", null),
+            new MenuOption("quit - quit the program", (params) -> quit()),
             new MenuOption("help - see more information about this menu", null));
 
     private final List<MenuOption> postLoginMenu = List.of(
@@ -39,7 +39,7 @@ public class ChessClient {
             new MenuOption("join {ID} [WHITE|BLACK] - join a game as selected team", (params) -> joinGame(Integer.parseInt(params[1]), params[2])),
             new MenuOption("observe {ID} - spectate an active game", null),
             new MenuOption("logout - logout from the current user", (params) -> logout()),
-            new MenuOption("quit - quit the program", null),
+            new MenuOption("quit - quit the program", (params) -> quit()),
             new MenuOption("help - see more information about this menu", null));
 
     private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game", null));
@@ -54,9 +54,8 @@ public class ChessClient {
     }
 
     public void run() {
-        final boolean running = true;
         try (Scanner scanner = new Scanner(System.in)) {
-            while (running) {
+            while (uiState != UIState.QUIT) {
                 printMenu();
                 final String line = scanner.nextLine();
                 System.out.println();
@@ -120,6 +119,11 @@ public class ChessClient {
         }
 
         return command.func();
+    }
+
+    private void quit() {
+        System.out.println("Goodbye!");
+        uiState = UIState.QUIT;
     }
 
     private void register(String username, String email, String password) {
