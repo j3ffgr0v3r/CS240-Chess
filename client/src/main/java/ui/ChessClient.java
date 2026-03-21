@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
+import chess.ChessGame;
 import client.ServerCommunicationFailure;
 import client.ServerFacade;
 import model.GameData;
@@ -64,9 +65,6 @@ public class ChessClient {
 
     public ChessClient(final String serverUrl) throws ServerCommunicationFailure {
         server = new ServerFacade(serverUrl);
-        chess.ChessBoard gameBoard = new chess.ChessBoard();
-        gameBoard.resetBoard();
-        board = new ChessBoard(gameBoard);
     }
 
     public void run() {
@@ -218,6 +216,9 @@ public class ChessClient {
         if (0 <= gameNumber && gameNumber < gameIDs.size()) {
             try {
                 server.joinGame(gameIDs.get(gameNumber), team.toUpperCase());
+                chess.ChessBoard gameBoard = new chess.ChessBoard();
+                gameBoard.resetBoard();
+                board = new ChessBoard(gameBoard, "BLACK".equals(team.toUpperCase()) ? ChessGame.TeamColor.BLACK: ChessGame.TeamColor.WHITE);
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
                 System.out.println(e.getMessage());
@@ -232,6 +233,9 @@ public class ChessClient {
         if (0 <= gameNumber && gameNumber < gameIDs.size()) {
             try {
                 server.observeGame(gameIDs.get(gameNumber));
+                chess.ChessBoard gameBoard = new chess.ChessBoard();
+                gameBoard.resetBoard();
+                board = new ChessBoard(gameBoard, ChessGame.TeamColor.WHITE);
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
                 System.out.println(e.getMessage());
