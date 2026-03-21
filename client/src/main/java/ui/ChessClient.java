@@ -132,7 +132,7 @@ public class ChessClient {
 
     private void createGame(String gameName) {
         try {
-            String gameID = server.createGame(gameName);
+            int gameID = server.createGame(gameName);
             System.out.println("Game successfully started with ID: " + gameID);
         } catch (HTTPException e) {
             System.out.println(e.getMessage());

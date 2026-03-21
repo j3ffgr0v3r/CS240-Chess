@@ -12,6 +12,7 @@ import model.exceptions.BadRequestException;
 import model.exceptions.UnauthorizedException;
 import model.requests.CreateGameRequest;
 import model.requests.JoinGameRequest;
+import model.results.GameCreationResult;
 import model.results.ListGamesResult;
 
 public class GameService extends Service {
@@ -29,7 +30,7 @@ public class GameService extends Service {
         return new ListGamesResult(gameDAO.getAllGames());
     }
 
-    public int createGame(CreateGameRequest request) throws BadRequestException, UnauthorizedException, DataAccessException {
+    public GameCreationResult createGame(CreateGameRequest request) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (request.gameName() == null) {
             throw new BadRequestException();
         }
@@ -40,7 +41,7 @@ public class GameService extends Service {
 
         gameDAO.setGame(new GameData(gameID, null, null, request.gameName(), new ChessGame()));
 
-        return gameID;
+        return new GameCreationResult(gameID);
     }
 
     public boolean joinGame(JoinGameRequest request) throws BadRequestException, UnauthorizedException, AlreadyTakenException, DataAccessException {

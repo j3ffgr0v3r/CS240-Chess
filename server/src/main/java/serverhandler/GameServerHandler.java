@@ -12,6 +12,7 @@ import model.exceptions.BadRequestException;
 import model.exceptions.UnauthorizedException;
 import model.requests.CreateGameRequest;
 import model.requests.JoinGameRequest;
+import model.results.GameCreationResult;
 import model.results.ListGamesResult;
 import service.GameService;
 
@@ -46,10 +47,10 @@ public class GameServerHandler {
         ctx.contentType("application/json");
 
         try {
-            int gameID = gameService.createGame(new CreateGameRequest(authToken, gameName));
+            GameCreationResult result = gameService.createGame(new CreateGameRequest(authToken, gameName));
 
             ctx.status(200);
-            ctx.result(new Gson().toJson(Map.of("gameID", gameID)));
+            ctx.result(new Gson().toJson(result));
         } catch (BadRequestException | UnauthorizedException | DataAccessException e) {
             ctx.status(e.getStatusCode());
             ctx.result(new Gson().toJson(Map.of("message", e.getMessage())));

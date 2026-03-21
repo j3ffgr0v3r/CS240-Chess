@@ -37,7 +37,7 @@ public class ServerFacade {
         this.authToken = null;
     }
 
-    public String createGame(String gameName) throws HTTPException {
+    public int createGame(String gameName) throws HTTPException {
         CreateGameRequest request = new CreateGameRequest(authToken, gameName);
         GameCreationResult response = communicator.post(request, "/game", authToken, GameCreationResult.class);
         return response.gameID();

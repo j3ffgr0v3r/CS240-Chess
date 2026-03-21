@@ -1,5 +1,5 @@
 package model.results;
 
-public record GameCreationResult(String gameID) implements Result {
+public record GameCreationResult(int gameID) implements Result {
 
 }
