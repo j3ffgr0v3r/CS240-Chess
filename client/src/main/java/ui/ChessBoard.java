@@ -1,12 +1,18 @@
 package ui;
 
-import java.util.Iterator;
 import chess.ChessGame;
 import chess.ChessPiece;
 import static ui.EscapeSequences.*;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.stream.Collectors;
+
 public final class ChessBoard {
     private chess.ChessBoard board;
+
+    private final String borderBGColor = SET_BG_COLOR_BLUE;
+    private final String[] header = {borderBGColor + EMPTY, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY + RESET_BG_COLOR};
 
     public ChessBoard(chess.ChessBoard board) {
         updateGame(board);
@@ -18,15 +24,22 @@ public final class ChessBoard {
 
     @Override
     public String toString() {
-        String output = "";
-        for (ChessPiece[] row : board.toArray()) {
-            output += "|";
-            for (ChessPiece space : row) {
-                output += pieceToChar(space) + "|";
+        Iterator<ChessPiece> pieces = board.iterator();
+        String[][] boardDisplay = new String[10][10];
+
+        boardDisplay[0] = header;
+        boardDisplay[9] = header;        
+
+        for (int row = 1; row < 9; row ++) {
+            boardDisplay[row][0] = borderBGColor +  " %s ".formatted(String.valueOf(row));
+            for (int col = 1; col < 9; col ++) {
+                String bgColor = (row + col) % 2 == 0 ? SET_BG_COLOR_LIGHT_GREY : SET_BG_COLOR_DARK_GREY;
+                boardDisplay[row][col] = bgColor + "%-1s".formatted(pieceToChar(pieces.next()));
             }
-            output += "\n";
+            boardDisplay[row][9] = borderBGColor + " %s ".formatted(String.valueOf(row)) + RESET_BG_COLOR;
         }
-        return output;
+
+        return Arrays.stream(boardDisplay).map(row -> Arrays.stream(row).collect(Collectors.joining())).collect(Collectors.joining("\n"))+RESET_BG_COLOR+RESET_TEXT_COLOR;
     }
 
     private String pieceToChar(ChessPiece space) {
@@ -56,6 +69,5 @@ public final class ChessBoard {
                 return "?";
             }
         }
-
     }
 }

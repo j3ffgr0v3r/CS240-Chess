@@ -70,9 +70,9 @@ public class ChessClient {
     public void run() {
         try (Scanner scanner = new Scanner(System.in)) {
             while (uiState != UIState.QUIT) {
-                if (uiState == UIState.GAMEPLAY) {
+                // if (uiState == UIState.GAMEPLAY) {
                     System.out.println(board);
-                }
+                // }
                 printMenu();
                 final String line = scanner.nextLine();
                 System.out.println();
