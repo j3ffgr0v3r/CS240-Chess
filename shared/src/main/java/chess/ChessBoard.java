@@ -94,10 +94,6 @@ public class ChessBoard implements Iterable<ChessPiece>, Cloneable {
         board = defaultBoard;
     }
 
-    public ChessPiece[][] toArray() {
-        return board.clone();
-    }
-
     @Override
     public String toString() {
         String output = "";

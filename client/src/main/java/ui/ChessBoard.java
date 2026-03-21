@@ -14,7 +14,7 @@ public final class ChessBoard {
     ChessGame.TeamColor side;
 
     private final String borderBGColor = SET_BG_COLOR_BLUE;
-    private final String[] header = {borderBGColor + EMPTY, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY + RESET_BG_COLOR};
+    private final String[] header = { borderBGColor + EMPTY, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY + RESET_BG_COLOR };
 
     public ChessBoard(chess.ChessBoard board, ChessGame.TeamColor side) {
         updateGame(board);
@@ -31,11 +31,11 @@ public final class ChessBoard {
         String[][] boardDisplay = new String[10][10];
 
         boardDisplay[0] = header.clone();
-        boardDisplay[9] = header.clone();        
+        boardDisplay[9] = header.clone();
 
-        for (int row = 1; row < 9; row ++) {
-            boardDisplay[row][0] = borderBGColor +  " %s ".formatted(String.valueOf(row));
-            for (int col = 1; col < 9; col ++) {
+        for (int row = 1; row < 9; row++) {
+            boardDisplay[row][0] = borderBGColor + " %s ".formatted(String.valueOf(row));
+            for (int col = 1; col < 9; col++) {
                 String bgColor = (row + col) % 2 == 0 ? SET_BG_COLOR_LIGHT_GREY : SET_BG_COLOR_DARK_GREY;
                 boardDisplay[row][col] = bgColor + "%-1s".formatted(pieceToChar(pieces.next()));
             }
@@ -46,11 +46,12 @@ public final class ChessBoard {
             Collections.reverse(Arrays.asList(boardDisplay));
         } else if (side == ChessGame.TeamColor.BLACK) {
             for (String[] row : boardDisplay) {
-                Collections.reverse(Arrays.asList(row).subList(1, row.length-1));
+                Collections.reverse(Arrays.asList(row).subList(1, row.length - 1));
             }
         }
 
-        return Arrays.stream(boardDisplay).map(row -> Arrays.stream(row).collect(Collectors.joining())).collect(Collectors.joining("\n"))+RESET_BG_COLOR+RESET_TEXT_COLOR;
+        return Arrays.stream(boardDisplay).map(row -> Arrays.stream(row).collect(Collectors.joining())).collect(Collectors.joining("\n"))
+                + RESET_BG_COLOR + RESET_TEXT_COLOR;
     }
 
     private String pieceToChar(ChessPiece space) {
