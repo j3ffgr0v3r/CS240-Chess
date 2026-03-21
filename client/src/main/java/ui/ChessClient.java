@@ -24,25 +24,30 @@ public class ChessClient {
 
     UIState uiState = UIState.PRELOGIN;
 
-    private record MenuOption(String usage, Consumer<String[]> func) {
+    private record MenuOption(String usage, String description, Consumer<String[]> func) {
     }
 
     private final List<MenuOption> preLoginMenu = List.of(
-            new MenuOption("register <USERNAME> <EMAIL> <PASSWORD> - register a new account", (params) -> register(params[1], params[2], params[3])),
-            new MenuOption("login <USERNAME> <PASSWORD> - sign in to play", (params) -> login(params[1], params[2])),
-            new MenuOption("quit - quit the program", (params) -> quit()),
-            new MenuOption("help - see more information about this menu", null));
+            new MenuOption("register <USERNAME> <EMAIL> <PASSWORD> - register a new account",
+                    "If this is your first time playing, use this command to register an account!",
+                    (params) -> register(params[1], params[2], params[3])),
+            new MenuOption("login <USERNAME> <PASSWORD> - sign in to play",
+                    "Use this command to sign back in to an account you have made to get back to playing chess.",
+                    (params) -> login(params[1], params[2])),
+            new MenuOption("quit - quit the program", "If you're done playing chess, use this command to close this program.", (params) -> quit()),
+            new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()));
 
     private final List<MenuOption> postLoginMenu = List.of(
-            new MenuOption("create <NAME> - start a new game", (params) -> createGame(params[1])),
-            new MenuOption("list - list all active games", (params) -> listGames()),
-            new MenuOption("join {ID} [WHITE|BLACK] - join a game as selected team", (params) -> joinGame(Integer.parseInt(params[1]), params[2])),
-            new MenuOption("observe {ID} - spectate an active game", null),
-            new MenuOption("logout - logout from the current user", (params) -> logout()),
-            new MenuOption("quit - quit the program", (params) -> quit()),
-            new MenuOption("help - see more information about this menu", null));
+            new MenuOption("create <NAME> - start a new game", "Begin a new round of chess with the given name to play against an opponent.", (params) -> createGame(params[1])),
+            new MenuOption("list - list all active games", "See what games are available to play or watch, and who is signed up to play them.", (params) -> listGames()),
+            new MenuOption("join {ID} [WHITE|BLACK] - join a game as selected team", "Join the selected chess game under the given play color. Note that the selected team must be available.",
+                    (params) -> joinGame(Integer.parseInt(params[1]), params[2])),
+            new MenuOption("observe {ID} - spectate an active game", "Watch the selected chess game without playing.", null),
+            new MenuOption("logout - logout from the current user", "Sign out of your account and return to the login menu.", (params) -> logout()),
+            new MenuOption("quit - quit the program", "If you're done playing chess, use this command to close this program.", (params) -> quit()),
+            new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()));
 
-    private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game", null));
+    private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game", "Stop participating in this game and return to the game selection menu.", null));
 
     private final Map<UIState, List<MenuOption>> stateMenuOptions = Map.of(
             UIState.PRELOGIN, preLoginMenu,
@@ -100,7 +105,7 @@ public class ChessClient {
         } else if (args.length > commandFormat.length) {
             throw new IllegalArgumentException(String.format("Error: Positional argument '%s' not recognized. Command argument format: %s",
                     args[commandFormat.length], command.usage().split("-")[0]));
-        } 
+        }
 
         int counter = 0;
         for (final String arg : commandFormat) {
@@ -109,13 +114,14 @@ public class ChessClient {
                     Integer.valueOf(args[counter]);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException(String.format("Error: Positional argument '%s' is not valid. Command argument format: %s",
-                    args[counter], command.usage().split("-")[0]));
+                            args[counter], command.usage().split("-")[0]));
                 }
-            } else if (arg.charAt(0) == '[' && !Arrays.asList(arg.substring(1, arg.length() - 1).split("\\|")).contains(args[counter].toUpperCase())) {
+            } else if (arg.charAt(0) == '['
+                    && !Arrays.asList(arg.substring(1, arg.length() - 1).split("\\|")).contains(args[counter].toUpperCase())) {
                 throw new IllegalArgumentException(String.format("Error: Positional argument '%s' is not valid. Command argument format: %s",
-                    args[counter], command.usage().split("-")[0]));
+                        args[counter], command.usage().split("-")[0]));
             }
-            counter ++;
+            counter++;
         }
 
         return command.func();
@@ -124,6 +130,17 @@ public class ChessClient {
     private void quit() {
         System.out.println("Goodbye!");
         uiState = UIState.QUIT;
+    }
+
+    private void help() {
+        System.out.println("""
+            Welcome to Chess! Below are the possible commands you can enter to begin playing, followed by a brief description of what they do. \
+            Simply enter a command keyword, followed by the acceptable parameters.\n Parameters surrounded by <> accept any input, \
+            {} take only numbers, and [] accept only the options listed within.\n""");
+        for (final MenuOption option : stateMenuOptions.get(uiState)) {
+            System.out.println(option.usage.split("\\s+")[0] + " - " + option.description);
+        }
+        System.out.println();
     }
 
     private void register(String username, String email, String password) {
