@@ -122,6 +122,18 @@ public class ServerFacadeTest {
     }
 
     @Test
+    void testLogoutRepeatedly() {
+        try {
+            facade.register("username", "email", "password");
+        } catch (HTTPException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        for (int i = 0; i < 10; i++) {
+            assertDoesNotThrow(() -> facade.logout());
+        }   
+    }
+
+    @Test
     void testJoinGame() {
         int gameID;
         try {
@@ -154,4 +166,36 @@ public class ServerFacadeTest {
         HTTPException exception = assertThrows(HTTPException.class, () -> facade.register(null, null, null));
         assertTrue(exception.getMessage().toLowerCase().contains("bad request"));
     }
+
+    @Test
+    void testClearDatabase() {
+        try {
+            facade.register("username", "email", "password");
+            facade.clearDatabase();
+        } catch (HTTPException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        HTTPException exception = assertThrows(HTTPException.class, () -> facade.login("username", "password"));
+        assertTrue(exception.getMessage().toLowerCase().contains("unauthorized"));
+    }
+
+    @Test
+    void testClearDatabaseRepeatedly() {
+        for (int i = 0; i < 10; i++) {
+            assertDoesNotThrow(() -> facade.clearDatabase());
+        }   
+    }
+
+    @Test
+    void testObserveGame() {
+        assertDoesNotThrow(() -> facade.observeGame(0));
+    }
+
+    @Test
+    void testObserveGameRepeatedly() {
+        for (int i = 0; i < 10; i++) {
+            assertDoesNotThrow(() -> facade.observeGame(0));
+        }  
+    }
+    
 }
