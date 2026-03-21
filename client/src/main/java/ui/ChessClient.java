@@ -47,7 +47,7 @@ public class ChessClient {
             new MenuOption("quit - quit the program", "If you're done playing chess, use this command to close this program.", (params) -> quit()),
             new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()));
 
-    private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game", "Stop participating in this game and return to the game selection menu.", null));
+    private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game", "Stop participating in this game and return to the game selection menu.", (params) -> leaveGame()));
 
     private final Map<UIState, List<MenuOption>> stateMenuOptions = Map.of(
             UIState.PRELOGIN, preLoginMenu,
@@ -224,5 +224,9 @@ public class ChessClient {
         } else {
             System.out.println("Error: Invalid game number " + (gameNumber + 1) + ". Enter 'list' to see available games.");
         }
+    }
+
+    private void leaveGame() {
+        uiState = UIState.POSTLOGIN;
     }
 }
