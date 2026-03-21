@@ -13,7 +13,7 @@ public abstract class Service {
     }
 
     protected void isAuthorized(String authToken) throws UnauthorizedException, DataAccessException {
-        if (authDAO.getSession(authToken) == null) {
+        if (authToken == null || authDAO.getSession(authToken) == null) {
             throw new UnauthorizedException();
         }
     }
