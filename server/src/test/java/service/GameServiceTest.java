@@ -87,7 +87,7 @@ public class GameServiceTest {
         int gameID;
 
         try {
-            gameID = gameService.createGame(new CreateGameRequest("authToken", "gameName"));
+            gameID = gameService.createGame(new CreateGameRequest("authToken", "gameName")).gameID();
 
             gameService.joinGame(new JoinGameRequest("authToken", "WHITE", gameID));
 
@@ -103,7 +103,7 @@ public class GameServiceTest {
         int gameID;
 
         try {
-            gameID = gameService.createGame(new CreateGameRequest("authToken", "gameName"));
+            gameID = gameService.createGame(new CreateGameRequest("authToken", "gameName")).gameID();
 
             gameService.joinGame(new JoinGameRequest("authToken", "WHITE", gameID));
             assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(new JoinGameRequest("authToken", "WHITE", gameID)));
