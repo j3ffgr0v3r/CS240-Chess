@@ -7,8 +7,7 @@ import java.util.function.Consumer;
 
 import client.ServerCommunicationFailure;
 import client.ServerFacade;
-import model.exceptions.AlreadyTakenException;
-import model.exceptions.BadRequestException;
+import model.exceptions.HTTPException;
 
 public class ChessClient {
     private final ServerFacade server;
@@ -23,8 +22,8 @@ public class ChessClient {
     }
 
     private final List<MenuOption> preLoginMenu = List.of(
-            new MenuOption("register <USERNAME> <PASSWORD> <EMAIL> - register a new account", (params) -> register(params[0], params[1], params[2])),
-            new MenuOption("login <USERNAME> <PASSWORD> - sign in to play", null),
+            new MenuOption("register <USERNAME> <EMAIL> <PASSWORD> - register a new account", (params) -> register(params[1], params[2], params[3])),
+            new MenuOption("login <USERNAME> <PASSWORD> - sign in to play", (params) -> login(params[1], params[2])),
             new MenuOption("quit - quit the program", null),
             new MenuOption("help - see more information about this menu", null));
 
@@ -32,7 +31,7 @@ public class ChessClient {
             new MenuOption("list - list all active games", null),
             new MenuOption("join <ID> [WHITE|BLACK] - join a game as selected team", null),
             new MenuOption("observe <ID> - spectate an active game", null),
-            new MenuOption("logout - logout from the current user", null),
+            new MenuOption("logout - logout from the current user", (params) -> logout()),
             new MenuOption("quit - quit the program", null),
             new MenuOption("help - see more information about this menu", null));
 
@@ -56,7 +55,10 @@ public class ChessClient {
                 System.out.println();
                 try {
                     String[] params = line.trim().split("\\s+");
-                    getCommand(params).accept(params);
+                    Consumer<String[]> command = getCommand(params);
+                    if (command != null) {
+                        command.accept(params);
+                    }
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage());
                     System.out.println();
@@ -98,7 +100,26 @@ public class ChessClient {
         try {
             this.username = server.register(username, email, password);
             uiState = UIState.POSTLOGIN;
-        } catch (BadRequestException | AlreadyTakenException e) {
+        } catch (HTTPException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void login(String username, String password) {
+        try {
+            this.username = server.login(username, password);
+            uiState = UIState.POSTLOGIN;
+        } catch (HTTPException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void logout() {
+        try {
+            server.logout();
+            this.username = null;
+            uiState = UIState.PRELOGIN;
+        } catch (HTTPException e) {
             System.out.println(e.getMessage());
         }
     }

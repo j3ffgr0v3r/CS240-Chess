@@ -9,10 +9,10 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 
 import model.exceptions.HTTPException;
 import model.requests.Request;
-import model.results.RegisterResult;
 import model.results.Result;
 
 public class ClientCommunicator {
@@ -23,31 +23,35 @@ public class ClientCommunicator {
         serverUrl = url;
     }
 
-    protected Result post(Request requestModel, String endpoint) throws HTTPException {
-        var request = buildRequest("POST", endpoint, requestModel);
+    protected <T extends Result> T post(Request requestModel, String endpoint, String authToken, Class<T> responseType) throws HTTPException {
+        var request = buildRequest("POST", endpoint, authToken, requestModel);
         var response = sendRequest(request);
-        return handleResponse(response, RegisterResult.class);
+        return handleResponse(response, responseType);
     }
 
-    protected Result get(Request request) {
+    protected Result get(Request requestModel, String endpoint, String authToken) {
         return null;
     }
 
-    protected Result put(Request request) {
+    protected Result put(Request requestModel, String endpoint, String authToken) {
         return null;
     }
 
-    protected Result delete(Request request) {
-        return null;
+    protected void delete(Request requestModel, String endpoint, String authToken) throws HTTPException {
+        var request = buildRequest("DELETE", endpoint, authToken, requestModel);
+        sendRequest(request);
     }
 
 
-    private HttpRequest buildRequest(String method, String path, Object body) {
+    private HttpRequest buildRequest(String method, String endpoint, String authToken, Object body) {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + path))
+                .uri(URI.create(serverUrl + endpoint))
                 .method(method, makeRequestBody(body));
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
+        }
+        if (authToken != null) {
+            request.setHeader("authorization", authToken);
         }
         return request.build();
     }
@@ -73,7 +77,7 @@ public class ClientCommunicator {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw new HTTPException(status, "Error: no body was found in server response");
+                throw new HTTPException(status, JsonParser.parseString(body).getAsJsonObject().get("message").getAsString());
             }
 
             throw new HTTPException(status, "Error: " + status);

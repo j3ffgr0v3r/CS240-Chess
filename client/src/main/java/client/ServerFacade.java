@@ -1,11 +1,11 @@
 package client;
 
-import model.exceptions.AlreadyTakenException;
-import model.exceptions.BadRequestException;
 import model.exceptions.HTTPException;
 import model.requests.RegisterRequest;
+import model.requests.SessionCreationRequest;
 import model.results.RegisterResult;
 import model.results.Result;
+import model.results.SessionCreationResult;
 
 public class ServerFacade {
     private String authToken;
@@ -15,18 +15,23 @@ public class ServerFacade {
         communicator = new ClientCommunicator(url);
     }
 
-    public String register(String username, String email, String password) throws BadRequestException, AlreadyTakenException {
+    public String register(String username, String email, String password) throws HTTPException {
         RegisterRequest request = new RegisterRequest(username, password, email);
-        try {
-            Result response = communicator.post(request, "/user");
-            if (response instanceof RegisterResult res) {
-                this.authToken = res.authToken();
-                return res.username();
-            }
-            throw new BadRequestException();
-        } catch (HTTPException e) {
-            throw new BadRequestException();
-        }
-        
+        RegisterResult response = communicator.post(request, "/user", authToken, RegisterResult.class);
+        this.authToken = response.authToken();
+        return response.username();
+    }
+
+    public String login(String username, String password) throws HTTPException {
+        SessionCreationRequest request = new SessionCreationRequest(username, password);
+        SessionCreationResult response = communicator.post(request, "/session", authToken, SessionCreationResult.class);
+        this.authToken = response.authToken();
+        return response.username();
+
+    }
+
+    public void logout() throws HTTPException {
+        communicator.delete(null, "/session", authToken);
+        this.authToken = null;
     }
 }
