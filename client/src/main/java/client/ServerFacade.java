@@ -60,4 +60,8 @@ public class ServerFacade {
     public void observeGame(int gameID) throws HTTPException {
         
     }
+
+    public void clearDatabase() throws HTTPException {
+        communicator.delete(null, "/db", null);
+    }
 }
