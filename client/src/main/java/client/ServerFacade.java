@@ -5,6 +5,7 @@ import java.util.List;
 import model.GameData;
 import model.exceptions.HTTPException;
 import model.requests.CreateGameRequest;
+import model.requests.JoinGameRequest;
 import model.requests.RegisterRequest;
 import model.requests.SessionCreationRequest;
 import model.results.GameCreationResult;
@@ -50,5 +51,10 @@ public class ServerFacade {
     public List<GameData> listGames() throws HTTPException {
         ListGamesResult response = communicator.get(null, "/game", authToken, ListGamesResult.class);
         return response.games();
+    }
+
+    public void joinGame(int gameID, String team) throws HTTPException {
+        JoinGameRequest request = new JoinGameRequest(authToken, team, gameID);
+        communicator.put(request, "/game", authToken, null);
     }
 }

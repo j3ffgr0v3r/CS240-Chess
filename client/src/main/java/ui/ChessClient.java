@@ -1,6 +1,7 @@
 package ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -35,8 +36,8 @@ public class ChessClient {
     private final List<MenuOption> postLoginMenu = List.of(
             new MenuOption("create <NAME> - start a new game", (params) -> createGame(params[1])),
             new MenuOption("list - list all active games", (params) -> listGames()),
-            new MenuOption("join <ID> [WHITE|BLACK] - join a game as selected team", null),
-            new MenuOption("observe <ID> - spectate an active game", null),
+            new MenuOption("join {ID} [WHITE|BLACK] - join a game as selected team", (params) -> joinGame(Integer.parseInt(params[1]), params[2])),
+            new MenuOption("observe {ID} - spectate an active game", null),
             new MenuOption("logout - logout from the current user", (params) -> logout()),
             new MenuOption("quit - quit the program", null),
             new MenuOption("help - see more information about this menu", null));
@@ -98,8 +99,24 @@ public class ChessClient {
         if (args.length < commandFormat.length) {
             throw new IllegalArgumentException("Error: Missing Arguments. Command argument format: " + command.usage().split("-")[0]);
         } else if (args.length > commandFormat.length) {
-            throw new IllegalArgumentException("Error: Positional argument '" + args[commandFormat.length]
-                    + "' not recognized. Command argument format: " + command.usage().split("-")[0]);
+            throw new IllegalArgumentException(String.format("Error: Positional argument '%s' not recognized. Command argument format: %s",
+                    args[commandFormat.length], command.usage().split("-")[0]));
+        } 
+
+        int counter = 0;
+        for (final String arg : commandFormat) {
+            if (arg.charAt(0) == '{') {
+                try {
+                    Integer.valueOf(args[counter]);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException(String.format("Error: Positional argument '%s' is not valid. Command argument format: %s",
+                    args[counter], command.usage().split("-")[0]));
+                }
+            } else if (arg.charAt(0) == '[' && !Arrays.asList(arg.substring(1, arg.length() - 1).split("\\|")).contains(args[counter].toUpperCase())) {
+                throw new IllegalArgumentException(String.format("Error: Positional argument '%s' is not valid. Command argument format: %s",
+                    args[counter], command.usage().split("-")[0]));
+            }
+            counter ++;
         }
 
         return command.func();
@@ -136,7 +153,8 @@ public class ChessClient {
     private void createGame(String gameName) {
         try {
             int gameID = server.createGame(gameName);
-            System.out.println("Game" + gameName + "successfully started!\n");
+            gameIDs.add(gameID);
+            System.out.println(String.format("Game %s successfully started as game %d!\n", gameName, gameIDs.size()));
         } catch (HTTPException e) {
             System.out.println(e.getMessage());
         }
@@ -156,6 +174,20 @@ public class ChessClient {
             System.out.println();
         } catch (HTTPException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    private void joinGame(int gameNumber, String team) {
+        gameNumber -= 1;
+        if (0 <= gameNumber && gameNumber < gameIDs.size()) {
+            try {
+                server.joinGame(gameIDs.get(gameNumber), team.toUpperCase());
+                uiState = UIState.GAMEPLAY;
+            } catch (HTTPException e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            System.out.println("Error: Invalid game number " + (gameNumber + 1) + ". Enter 'list' to see available games.");
         }
     }
 }
