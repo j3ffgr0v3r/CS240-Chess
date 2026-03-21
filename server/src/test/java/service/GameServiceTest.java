@@ -17,8 +17,8 @@ import model.GameData;
 import model.exceptions.AlreadyTakenException;
 import model.exceptions.BadRequestException;
 import model.exceptions.UnauthorizedException;
+import model.requests.CreateGameRequest;
 import model.requests.JoinGameRequest;
-import model.requestsandresults.CreateGameRequest;
 
 public class GameServiceTest {
 
