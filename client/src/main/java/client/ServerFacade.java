@@ -57,4 +57,8 @@ public class ServerFacade {
         JoinGameRequest request = new JoinGameRequest(authToken, team, gameID);
         communicator.put(request, "/game", authToken, null);
     }
+
+    public void observeGame(int gameID) throws HTTPException {
+        
+    }
 }

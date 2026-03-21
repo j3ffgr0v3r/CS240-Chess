@@ -42,7 +42,7 @@ public class ChessClient {
             new MenuOption("list - list all active games", "See what games are available to play or watch, and who is signed up to play them.", (params) -> listGames()),
             new MenuOption("join {ID} [WHITE|BLACK] - join a game as selected team", "Join the selected chess game under the given play color. Note that the selected team must be available.",
                     (params) -> joinGame(Integer.parseInt(params[1]), params[2])),
-            new MenuOption("observe {ID} - spectate an active game", "Watch the selected chess game without playing.", null),
+            new MenuOption("observe {ID} - spectate an active game", "Watch the selected chess game without playing.", (params) -> observeGame(Integer.parseInt(params[1]))),
             new MenuOption("logout - logout from the current user", "Sign out of your account and return to the login menu.", (params) -> logout()),
             new MenuOption("quit - quit the program", "If you're done playing chess, use this command to close this program.", (params) -> quit()),
             new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()));
@@ -203,6 +203,20 @@ public class ChessClient {
         if (0 <= gameNumber && gameNumber < gameIDs.size()) {
             try {
                 server.joinGame(gameIDs.get(gameNumber), team.toUpperCase());
+                uiState = UIState.GAMEPLAY;
+            } catch (HTTPException e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            System.out.println("Error: Invalid game number " + (gameNumber + 1) + ". Enter 'list' to see available games.");
+        }
+    }
+
+    private void observeGame(int gameNumber) {
+        gameNumber -= 1;
+        if (0 <= gameNumber && gameNumber < gameIDs.size()) {
+            try {
+                server.observeGame(gameIDs.get(gameNumber));
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
                 System.out.println(e.getMessage());
