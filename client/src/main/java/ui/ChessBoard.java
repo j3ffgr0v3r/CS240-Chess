@@ -1,13 +1,30 @@
 package ui;
 
-import chess.ChessGame;
-import chess.ChessPiece;
-import static ui.EscapeSequences.*;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.stream.Collectors;
+
+import chess.ChessGame;
+import chess.ChessPiece;
+import static ui.EscapeSequences.BLACK_BISHOP;
+import static ui.EscapeSequences.BLACK_KING;
+import static ui.EscapeSequences.BLACK_KNIGHT;
+import static ui.EscapeSequences.BLACK_PAWN;
+import static ui.EscapeSequences.BLACK_QUEEN;
+import static ui.EscapeSequences.BLACK_ROOK;
+import static ui.EscapeSequences.EMPTY;
+import static ui.EscapeSequences.RESET_BG_COLOR;
+import static ui.EscapeSequences.RESET_TEXT_COLOR;
+import static ui.EscapeSequences.SET_BG_COLOR_BLUE;
+import static ui.EscapeSequences.SET_BG_COLOR_DARK_GREY;
+import static ui.EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+import static ui.EscapeSequences.WHITE_BISHOP;
+import static ui.EscapeSequences.WHITE_KING;
+import static ui.EscapeSequences.WHITE_KNIGHT;
+import static ui.EscapeSequences.WHITE_PAWN;
+import static ui.EscapeSequences.WHITE_QUEEN;
+import static ui.EscapeSequences.WHITE_ROOK;
 
 public final class ChessBoard {
     private chess.ChessBoard board;
@@ -36,7 +53,7 @@ public final class ChessBoard {
         for (int row = 1; row < 9; row++) {
             boardDisplay[row][0] = borderBGColor + " %s ".formatted(String.valueOf(row));
             for (int col = 1; col < 9; col++) {
-                String bgColor = (row + col) % 2 == 0 ? SET_BG_COLOR_LIGHT_GREY : SET_BG_COLOR_DARK_GREY;
+                String bgColor = (row + col) % 2 == 0 ? SET_BG_COLOR_DARK_GREY : SET_BG_COLOR_LIGHT_GREY;
                 boardDisplay[row][col] = bgColor + "%-1s".formatted(pieceToChar(pieces.next()));
             }
             boardDisplay[row][9] = borderBGColor + " %s ".formatted(String.valueOf(row)) + RESET_BG_COLOR;
