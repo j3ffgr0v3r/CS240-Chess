@@ -1,5 +1,6 @@
 package ui;
 
+import static java.lang.Math.abs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.function.Consumer;
 
 import chess.ChessGame;
 import chess.ChessPosition;
+import client.NotificationHandler;
 import client.ServerCommunicationFailure;
 import client.ServerFacade;
 import model.GameData;
@@ -18,6 +20,7 @@ import static ui.EscapeSequences.ERASE_SCREEN;
 public class ChessClient {
     private final ServerFacade server;
     private ChessBoard board;
+    private NotificationHandler notificationHandler;
 
     private String username = null;
     private final List<Integer> gameIDs = new ArrayList<>();
@@ -80,7 +83,7 @@ public class ChessClient {
         try (Scanner scanner = new Scanner(System.in)) {
             while (uiState != UIState.QUIT) {
                 if (uiState == UIState.GAMEPLAY) {
-                    System.out.println(board);
+                    printGame();
                 }
                 printMenu();
                 final String line = scanner.nextLine();
@@ -105,6 +108,18 @@ public class ChessClient {
             System.out.println(option.usage);
         }
         System.out.println();
+    }
+
+    private void printGame() {
+        String[] gameBoard = board.toString().split("\n");
+        for (int i = 0; i < 10; i++) {
+            System.out.print(gameBoard[i]);
+            if (i >= 1 && i <= 8) {
+                System.out.print(" ".repeat(10));
+                System.out.print(notificationHandler.getNotification(abs(i-8)));
+            }
+            System.out.println();
+        }
     }
 
     private Consumer<String[]> getCommand(String... args) throws IllegalArgumentException {
@@ -246,7 +261,8 @@ public class ChessClient {
         gameNumber -= 1;
         if (0 <= gameNumber && gameNumber < gameIDs.size()) {
             try {
-                server.joinGame(gameIDs.get(gameNumber), team.toUpperCase());
+                notificationHandler = new NotificationHandler();
+                server.joinGame(gameIDs.get(gameNumber), team.toUpperCase(), notificationHandler);
                 chess.ChessBoard gameBoard = new chess.ChessBoard();
                 gameBoard.resetBoard();
                 board = new ChessBoard(gameBoard, "BLACK".equals(team.toUpperCase()) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
@@ -263,7 +279,8 @@ public class ChessClient {
         gameNumber -= 1;
         if (0 <= gameNumber && gameNumber < gameIDs.size()) {
             try {
-                server.observeGame(gameIDs.get(gameNumber));
+                notificationHandler = new NotificationHandler();
+                server.observeGame(gameIDs.get(gameNumber), notificationHandler);
                 chess.ChessBoard gameBoard = new chess.ChessBoard();
                 gameBoard.resetBoard();
                 board = new ChessBoard(gameBoard, ChessGame.TeamColor.WHITE);

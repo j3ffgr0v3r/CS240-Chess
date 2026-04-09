@@ -24,14 +24,8 @@ public class ServerFacade {
         return this.authToken;
     }
 
-    public ServerFacade(String url) throws ServerCommunicationFailure {
-        communicator = new ClientCommunicator(url);
-        try {
-            webSocketFacade = new WebSocketFacade(url, this::getToken, new NotificationHandler());
-        } catch (HTTPException e) {
-            throw new ServerCommunicationFailure();
-        }
-        
+    public ServerFacade(String url) {
+        communicator = new ClientCommunicator(url);        
     }
 
     public String register(String username, String email, String password) throws HTTPException {
@@ -64,9 +58,10 @@ public class ServerFacade {
         return response.games();
     }
 
-    public void joinGame(int gameID, String team) throws HTTPException {
+    public void joinGame(int gameID, String team, NotificationHandler notificationHandler) throws HTTPException {
         JoinGameRequest request = new JoinGameRequest(authToken, team, gameID);
         communicator.put(request, "/game", authToken, null);
+        webSocketFacade = new WebSocketFacade(communicator.getServerUrl(), this::getToken, notificationHandler);
         webSocketFacade.connect(gameID);
     }
 
@@ -74,7 +69,8 @@ public class ServerFacade {
         webSocketFacade.leave();
     }
 
-    public void observeGame(int gameID) throws HTTPException {
+    public void observeGame(int gameID, NotificationHandler notificationHandler) throws HTTPException {
+        webSocketFacade = new WebSocketFacade(communicator.getServerUrl(), this::getToken, notificationHandler);
         webSocketFacade.connect(gameID);
     }
 

@@ -24,6 +24,10 @@ public class ClientCommunicator {
         serverUrl = url;
     }
 
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
     protected <T extends Result> T post(Request requestModel, String endpoint, String authToken, Class<T> responseType) throws HTTPException {
         var request = buildRequest("POST", endpoint, authToken, requestModel);
         var response = sendRequest(request);
