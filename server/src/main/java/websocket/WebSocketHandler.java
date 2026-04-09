@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.InvalidMoveException;
 import dataaccess.DataAccessException;
 import io.javalin.websocket.WsCloseContext;
@@ -16,6 +17,7 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.GameData;
 import model.exceptions.BadRequestException;
 import model.exceptions.UnauthorizedException;
 import service.GameService;
@@ -125,7 +127,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     public void makeMove(int gameID, String playerName, ChessMove move, Session session) throws IOException {
         try {
-            // Make sure player is not trying to move other players piece
+            GameData game = gameService.getGame(gameID);
+
+            if (game.game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER) {
+                throw new InvalidMoveException("The game is over! You cannot move any pieces!");
+            }
+
+            ChessPiece piece = game.game().getBoard().getPiece(move.getStartPosition());
+            ChessGame.TeamColor team = piece == null ? null : piece.getTeamColor();
+
+            if (team == null || (team == ChessGame.TeamColor.BLACK && !game.blackUsername().equals(playerName))
+                    || (team == ChessGame.TeamColor.WHITE && !game.whiteUsername().equals(playerName))) {
+                throw new InvalidMoveException("You do not own that piece!");
+            }
+
             gameService.makeMove(gameID, move);
 
             String message = String.format("%s moved %s", playerName, move);
@@ -134,6 +149,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
             connections.broadcast(null, gameUpdate);
+
+            if (gameService.getGame(gameID).game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER) {
+                serverMessage = new NotificationMessage("Game Over!");
+                connections.broadcast(null, serverMessage);
+            }
         } catch (BadRequestException | InvalidMoveException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
             connections.dm(session, errorMessage);
