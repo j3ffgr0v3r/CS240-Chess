@@ -16,9 +16,20 @@ import model.results.SessionCreationResult;
 public class ServerFacade {
     private String authToken;
     private final ClientCommunicator communicator;
+    private WebSocketFacade webSocketFacade;
+
+    public String getToken() {
+        return this.authToken;
+    }
 
     public ServerFacade(String url) throws ServerCommunicationFailure {
         communicator = new ClientCommunicator(url);
+        try {
+            webSocketFacade = new WebSocketFacade(url, this::getToken, null);
+        } catch (HTTPException e) {
+            throw new ServerCommunicationFailure();
+        }
+        
     }
 
     public String register(String username, String email, String password) throws HTTPException {
@@ -33,7 +44,6 @@ public class ServerFacade {
         SessionCreationResult response = communicator.post(request, "/session", authToken, SessionCreationResult.class);
         this.authToken = response.authToken();
         return response.username();
-
     }
 
     public void logout() throws HTTPException {
@@ -58,7 +68,7 @@ public class ServerFacade {
     }
 
     public void observeGame(int gameID) throws HTTPException {
-        
+        webSocketFacade.connect(gameID);
     }
 
     public void clearDatabase() throws HTTPException {
