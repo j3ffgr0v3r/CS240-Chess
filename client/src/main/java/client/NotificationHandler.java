@@ -5,7 +5,8 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import ui.ChessBoard;
+import ui.ChessClient;
+import static ui.EscapeSequences.ERASE_SCREEN;
 import static ui.EscapeSequences.RESET_TEXT_COLOR;
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
@@ -18,23 +19,25 @@ public class NotificationHandler {
 
     List<String> messages = new ArrayList<>(8);
 
-    ui.ChessBoard board;
+    ChessClient client;
 
-    public NotificationHandler(ChessBoard board) {
-        this.board = board;
+    public NotificationHandler(ChessClient client) {
+        this.client = client;
     }
 
     void notify(String message) {
         ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
         switch (serverMessage.getServerMessageType()) {
-                case NOTIFICATION -> notification(new Gson().fromJson(message, NotificationMessage.class));
-                case ERROR -> error(new Gson().fromJson(message, ErrorMessage.class));
-                case LOAD_GAME -> loadGame(new Gson().fromJson(message, LoadGameMessage.class));
-            }
+            case NOTIFICATION -> notification(new Gson().fromJson(message, NotificationMessage.class));
+            case ERROR -> error(new Gson().fromJson(message, ErrorMessage.class));
+            case LOAD_GAME -> loadGame(new Gson().fromJson(message, LoadGameMessage.class));
+        }
     }
 
     void notification(NotificationMessage notification) {
         addMessage(String.format("%s%s%s", SET_TEXT_COLOR_YELLOW, notification.getMessage(), RESET_TEXT_COLOR));
+        System.out.print(ERASE_SCREEN);
+        client.printMenu();
     }
 
     void error(ErrorMessage errorMessage) {
@@ -42,7 +45,9 @@ public class NotificationHandler {
     }
 
     void loadGame(LoadGameMessage message) {
-        board.updateGame(message.getGame());
+        client.getBoard().updateGame(message.getGame());
+        System.out.print(ERASE_SCREEN);
+        client.printMenu();
     }
 
 

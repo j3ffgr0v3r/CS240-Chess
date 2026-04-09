@@ -30,6 +30,7 @@ public class ChessClient {
     }
 
     UIState uiState = UIState.PRELOGIN;
+    private boolean highlighting = false;
 
     private record MenuOption(String usage, String description, Consumer<String[]> func) {
     }
@@ -82,10 +83,11 @@ public class ChessClient {
     public void run() {
         try (Scanner scanner = new Scanner(System.in)) {
             while (uiState != UIState.QUIT) {
-                if (uiState == UIState.GAMEPLAY) {
-                    printGame();
+                if (!highlighting) {
+                    printMenu();
+                } else {
+                    highlighting = false;
                 }
-                printMenu();
                 final String line = scanner.nextLine();
                 System.out.println();
                 System.out.print(ERASE_SCREEN);
@@ -106,15 +108,26 @@ public class ChessClient {
         }
     }
 
-    private void printMenu() {
+    public void printMenu() {
+        printMenu(false, null);
+    }
+
+    public void printMenu(boolean highlight, ChessPosition pos) {
+        if (uiState == UIState.GAMEPLAY) {
+            printGame(highlight, pos);
+        }
         for (final MenuOption option : stateMenuOptions.get(uiState)) {
             System.out.println(option.usage);
         }
         System.out.println();
     }
 
-    private void printGame() {
-        String[] gameBoard = board.toString().split("\n");
+    public void printGame() {
+        printGame(false, null);
+    }
+
+    private void printGame(boolean highlight, ChessPosition pos) {
+        String[] gameBoard = board.toString(highlight, pos).split("\n");
         for (int i = 0; i < 10; i++) {
             System.out.print(gameBoard[i]);
             if (i >= 1 && i <= 8) {
@@ -123,6 +136,10 @@ public class ChessClient {
             }
             System.out.println();
         }
+    }
+
+    public ui.ChessBoard getBoard() {
+        return board;
     }
 
     private Consumer<String[]> getCommand(String... args) throws IllegalArgumentException {
@@ -267,7 +284,7 @@ public class ChessClient {
                 chess.ChessGame gameBoard = new chess.ChessGame();
                 gameBoard.getBoard().resetBoard();
                 board = new ChessBoard(gameBoard, "BLACK".equals(team.toUpperCase()) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
-                notificationHandler = new NotificationHandler(board);
+                notificationHandler = new NotificationHandler(this);
                 server.joinGame(gameIDs.get(gameNumber), team.toUpperCase(), notificationHandler);
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
@@ -285,6 +302,7 @@ public class ChessClient {
                 chess.ChessGame gameBoard = new chess.ChessGame();
                 gameBoard.getBoard().resetBoard();
                 board = new ChessBoard(gameBoard, ChessGame.TeamColor.WHITE);
+                notificationHandler = new NotificationHandler(this);
                 server.observeGame(gameIDs.get(gameNumber), notificationHandler);
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
@@ -324,8 +342,9 @@ public class ChessClient {
         }
     }
 
-    private void highlight(String piece) {
-
+    private void highlight(String pos) {
+        printMenu(true, stringToPos(pos));
+        highlighting = true;
     }
 
     private ChessPosition stringToPos(String pos) {

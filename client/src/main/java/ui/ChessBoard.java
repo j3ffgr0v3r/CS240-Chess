@@ -1,12 +1,15 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import chess.ChessGame;
 import chess.ChessPiece;
+import chess.ChessPosition;
 import static ui.EscapeSequences.BLACK_BISHOP;
 import static ui.EscapeSequences.BLACK_KING;
 import static ui.EscapeSequences.BLACK_KNIGHT;
@@ -17,8 +20,11 @@ import static ui.EscapeSequences.EMPTY;
 import static ui.EscapeSequences.RESET_BG_COLOR;
 import static ui.EscapeSequences.RESET_TEXT_COLOR;
 import static ui.EscapeSequences.SET_BG_COLOR_BLUE;
+import static ui.EscapeSequences.SET_BG_COLOR_DARK_GREEN;
 import static ui.EscapeSequences.SET_BG_COLOR_DARK_GREY;
+import static ui.EscapeSequences.SET_BG_COLOR_GREEN;
 import static ui.EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+import static ui.EscapeSequences.SET_BG_COLOR_YELLOW;
 import static ui.EscapeSequences.WHITE_BISHOP;
 import static ui.EscapeSequences.WHITE_KING;
 import static ui.EscapeSequences.WHITE_KNIGHT;
@@ -44,8 +50,18 @@ public final class ChessBoard {
 
     @Override
     public String toString() {
+        return toString(false, null);
+    }
+
+    public String toString(boolean highlight, ChessPosition pos) {
         Iterator<ChessPiece> pieces = game.getBoard().iterator();
         String[][] boardDisplay = new String[10][10];
+
+        List<ChessPosition> highlightedSquares = new ArrayList<>();
+
+        if (highlight) {
+            highlightedSquares = game.validMoves(pos).stream().map(move -> move.getEndPosition()).collect(Collectors.toCollection(ArrayList::new));
+        }
 
         boardDisplay[0] = header.clone();
         boardDisplay[9] = header.clone();
@@ -54,6 +70,13 @@ public final class ChessBoard {
             boardDisplay[row][0] = borderBGColor + " %s ".formatted(String.valueOf(row));
             for (int col = 1; col < 9; col++) {
                 String bgColor = (row + col) % 2 == 0 ? SET_BG_COLOR_DARK_GREY : SET_BG_COLOR_LIGHT_GREY;
+                if (highlight) {
+                    if (highlightedSquares.contains(new ChessPosition(row, col))) {
+                        bgColor = bgColor.equals(SET_BG_COLOR_DARK_GREY) ? SET_BG_COLOR_DARK_GREEN : SET_BG_COLOR_GREEN;
+                    } else if (new ChessPosition(row, col).equals(pos)) {
+                        bgColor = SET_BG_COLOR_YELLOW;
+                    }
+                }
                 boardDisplay[row][col] = bgColor + "%-1s".formatted(pieceToChar(pieces.next()));
             }
             boardDisplay[row][9] = borderBGColor + " %s ".formatted(String.valueOf(row)) + RESET_BG_COLOR;
