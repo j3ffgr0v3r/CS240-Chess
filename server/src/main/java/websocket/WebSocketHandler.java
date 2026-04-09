@@ -77,7 +77,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(int gameID, String playerName, Session session) throws IOException {
-        connections.add(session);
+        connections.add(session, gameID);
 
         LoadGameMessage gameUpdate;
         try {
@@ -85,7 +85,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.dm(session, gameUpdate);
             String message = String.format("%s has joined the game", playerName);
             NotificationMessage serverMessage = new NotificationMessage(message);
-            connections.broadcast(session, serverMessage);
+            connections.broadcast(session, gameID, serverMessage);
         } catch (BadRequestException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
             connections.dm(session, errorMessage);
@@ -95,7 +95,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leave(int gameID, String playerName, Session session) throws IOException {
         String message = String.format("%s has left the game", playerName);
         NotificationMessage serverMessage = new NotificationMessage(message);
-        connections.broadcast(session, serverMessage);
+        connections.broadcast(session, gameID, serverMessage);
         connections.remove(session);
         try {
             gameService.leaveGame(gameID, playerName);
@@ -115,7 +115,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             String message = String.format("%s has resigned from the game.", playerName);
             NotificationMessage serverMessage = new NotificationMessage(message);
-            connections.broadcast(null, serverMessage);
+            connections.broadcast(null, gameID, serverMessage);
 
             ChessGame endedGame = gameService.getGame(gameID).game();
             endedGame.endGame();
@@ -146,14 +146,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             String message = String.format("%s moved %s", playerName, move);
             NotificationMessage serverMessage = new NotificationMessage(message);
-            connections.broadcast(session, serverMessage);
+            connections.broadcast(session, gameID, serverMessage);
 
             LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
-            connections.broadcast(null, gameUpdate);
+            connections.broadcast(null, gameID, gameUpdate);
 
             if (gameService.getGame(gameID).game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER) {
                 serverMessage = new NotificationMessage("Game Over!");
-                connections.broadcast(null, serverMessage);
+                connections.broadcast(null, gameID, serverMessage);
             }
         } catch (BadRequestException | InvalidMoveException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
