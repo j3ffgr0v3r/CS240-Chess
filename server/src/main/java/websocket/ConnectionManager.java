@@ -30,4 +30,15 @@ public class ConnectionManager {
             }
         }
     }
+
+    public void dm(Session targetSession, ServerMessage notification) throws IOException {
+        String msg = new Gson().toJson(notification);
+        for (Session c : connections.values()) {
+            if (c.isOpen()) {
+                if (c.equals(targetSession)) {
+                    c.getRemote().sendString(msg);
+                }
+            }
+        }
+    }
 }

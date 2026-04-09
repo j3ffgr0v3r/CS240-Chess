@@ -49,11 +49,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             UserGameCommand userGameCommand = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             String username = userService.getUserFromAuth(userGameCommand.getAuthToken());
             switch (userGameCommand.getCommandType()) {
-                case CONNECT -> connect(username, ctx.session);
+                case CONNECT -> connect(userGameCommand.getGameID(), username, ctx.session);
                 case MAKE_MOVE -> {
                     MakeMoveCommand makeMoveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
-                    makeMove(userGameCommand.getGameID(), username, makeMoveCommand.getMove());
-                } 
+                    makeMove(userGameCommand.getGameID(), username, makeMoveCommand.getMove(),  ctx.session);
+                }
                 case LEAVE -> leave(userGameCommand.getGameID(), username, ctx.session);
                 case RESIGN -> resign(userGameCommand.getGameID(), username);
             }
@@ -67,11 +67,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    private void connect(String playerName, Session session) throws IOException {
+    private void connect(int gameID, String playerName, Session session) throws IOException {
         connections.add(session);
         String message = String.format("%s has joined the game", playerName);
         NotificationMessage serverMessage = new NotificationMessage(message);
         connections.broadcast(session, serverMessage);
+
+        LoadGameMessage gameUpdate;
+        try {
+            gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
+            connections.dm(session, gameUpdate);
+        } catch (DataAccessException ex) {
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.dm(session, errorMessage);
+        }
     }
 
     private void leave(int gameID, String playerName, Session session) throws IOException {
@@ -107,20 +116,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    public void makeMove(int gameID, String playerName, ChessMove move) throws IOException {
+    public void makeMove(int gameID, String playerName, ChessMove move, Session session) throws IOException {
         try {
             // Make sure player is not trying to move other players piece
             gameService.makeMove(gameID, move);
-        
+
             String message = String.format("%s moved %s", playerName, move);
             NotificationMessage serverMessage = new NotificationMessage(message);
-            connections.broadcast(null, serverMessage);
+            connections.broadcast(session, serverMessage);
 
             LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
             connections.broadcast(null, gameUpdate);
         } catch (InvalidMoveException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
-            connections.broadcast(null, errorMessage);
+            connections.dm(session, errorMessage);
         }
     }
 }
