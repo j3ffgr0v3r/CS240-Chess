@@ -110,7 +110,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             GameData game = gameService.getGame(gameID);
 
             if (game.game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER
-                    || (!game.blackUsername().equals(playerName) && !game.whiteUsername().equals(playerName))) {
+                    || ((game.blackUsername() != null && !game.blackUsername().equals(playerName)) && (game.whiteUsername() != null && !game.whiteUsername().equals(playerName)))) {
                 throw new BadRequestException();
             }
 

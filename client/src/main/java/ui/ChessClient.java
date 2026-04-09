@@ -67,7 +67,7 @@ public class ChessClient {
                     (params) -> leaveGame()),
             new MenuOption("move (from) (to) - move a chess piece", "Use this command to move one of your chess pieces on your turn.",
                     (params) -> move(params[1], params[2])),
-            new MenuOption("resign - give up", "Use this command to surrender this game to your opponent.", (params) -> resign()),
+            new MenuOption("resign - give up", "Use this command to surrender this game to your opponent.", null),
             new MenuOption("highlight (position) - show legal moves for given piece",
                     "Use this command to see the available moves for the piece at the given location.", (params) -> highlight(params[1])));
 
@@ -106,6 +106,8 @@ public class ChessClient {
                     Consumer<String[]> command = getCommand(params);
                     if (command != null) {
                         command.accept(params);
+                    } else if ("resign".equals(params[0])) {
+                        resign(scanner);
                     }
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage());
@@ -344,12 +346,9 @@ public class ChessClient {
         }
     }
 
-    private void resign() {
+    private void resign(Scanner scanner) {
         System.out.println("Are you sure you wish to resign? This cannot be undone. (y/n)");
-        String line;
-        try (Scanner scanner = new Scanner(System.in)) {
-            line = scanner.nextLine();
-        }
+        String line = scanner.nextLine();
         if (line.toLowerCase().charAt(0) == 'y') {
             try {
                 server.resign();
