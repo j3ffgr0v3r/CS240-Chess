@@ -108,10 +108,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void resign(int gameID, String playerName, Session session) throws IOException {
         try {
             GameData game = gameService.getGame(gameID);
-            
-            if (game.game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER || (!game.blackUsername().equals(playerName) && !game.whiteUsername().equals(playerName))) {
+
+            if (game.game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER
+                    || (!game.blackUsername().equals(playerName) && !game.whiteUsername().equals(playerName))) {
                 throw new BadRequestException();
-            } 
+            }
 
             String message = String.format("%s has resigned from the game.", playerName);
             NotificationMessage serverMessage = new NotificationMessage(message);
