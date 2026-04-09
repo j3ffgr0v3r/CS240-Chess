@@ -1,7 +1,5 @@
 package ui;
 
-import static ui.EscapeSequences.ERASE_SCREEN;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +12,7 @@ import client.ServerCommunicationFailure;
 import client.ServerFacade;
 import model.GameData;
 import model.exceptions.HTTPException;
+import static ui.EscapeSequences.ERASE_SCREEN;
 
 public class ChessClient {
     private final ServerFacade server;
@@ -218,7 +217,7 @@ public class ChessClient {
                 server.joinGame(gameIDs.get(gameNumber), team.toUpperCase());
                 chess.ChessBoard gameBoard = new chess.ChessBoard();
                 gameBoard.resetBoard();
-                board = new ChessBoard(gameBoard, "BLACK".equals(team.toUpperCase()) ? ChessGame.TeamColor.BLACK: ChessGame.TeamColor.WHITE);
+                board = new ChessBoard(gameBoard, "BLACK".equals(team.toUpperCase()) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
                 System.out.println(e.getMessage());
