@@ -3,6 +3,7 @@ package client;
 import java.util.List;
 
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import model.GameData;
 import model.exceptions.HTTPException;
@@ -78,8 +79,8 @@ public class ServerFacade {
         webSocketFacade.resign();
     }
 
-    public void move(ChessPosition from, ChessPosition to) throws HTTPException {
-        webSocketFacade.makeMove(new ChessMove(from, to, null));
+    public void move(ChessPosition from, ChessPosition to, ChessPiece.PieceType promotion) throws HTTPException {
+        webSocketFacade.makeMove(new ChessMove(from, to, promotion));
     }
 
     public void clearDatabase() throws HTTPException {

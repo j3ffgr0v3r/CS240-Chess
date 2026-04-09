@@ -48,6 +48,10 @@ public final class ChessBoard {
         this.game = update;
     }
 
+    public chess.ChessGame getGame() {
+        return game;
+    }
+
     @Override
     public String toString() {
         return toString(false, null);

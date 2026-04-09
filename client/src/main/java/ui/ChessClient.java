@@ -9,6 +9,8 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPiece.PieceType;
 import chess.ChessPosition;
 import client.NotificationHandler;
 import client.ServerCommunicationFailure;
@@ -66,7 +68,7 @@ public class ChessClient {
             new MenuOption("leave - leave this game", "Stop participating in this game and return to the game selection menu.",
                     (params) -> leaveGame()),
             new MenuOption("move (from) (to) - move a chess piece", "Use this command to move one of your chess pieces on your turn.",
-                    (params) -> move(params[1], params[2])),
+                    (params) -> move(params[1], params[2], null)),
             new MenuOption("resign - give up", "Use this command to surrender this game to your opponent.", null),
             new MenuOption("highlight (position) - show legal moves for given piece",
                     "Use this command to see the available moves for the piece at the given location.", (params) -> highlight(params[1])));
@@ -104,7 +106,11 @@ public class ChessClient {
                 try {
                     String[] params = line.trim().split("\\s+");
                     Consumer<String[]> command = getCommand(params);
-                    if (command != null) {
+                    if (command != null && "move".equals(params[0])
+                            && board.getGame().getBoard().getPiece(stringToPos(params[1])).getPieceType() == PieceType.PAWN &&
+                            (stringToPos(params[2]).getRow() == 1 || stringToPos(params[2]).getRow() == 8)) {
+                        move(params[1], params[2], scanner);
+                    } else if (command != null) {
                         command.accept(params);
                     } else if ("resign".equals(params[0])) {
                         resign(scanner);
@@ -197,7 +203,7 @@ public class ChessClient {
                 for (char c : args[counter].toCharArray()) {
                     if (Character.isDigit(c) && Character.getNumericValue(c) >= 1 && Character.getNumericValue(c) <= 8) {
                         digitCount++;
-                    } else if (c >= 'a' && c <= 'g') {
+                    } else if (c >= 'a' && c <= 'h') {
                         charAGCount++;
                     } else {
                         illegalChar = true;
@@ -338,9 +344,23 @@ public class ChessClient {
 
     }
 
-    private void move(String from, String to) {
+    private void move(String from, String to, Scanner scanner) {
+        ChessPiece.PieceType promotion = null;
+        if (scanner != null) {
+            while (promotion == null) {
+                System.out.println("What would you like to promote your pawn to? [(Q)ueen | (K)night | (R)ook | (B)ishop]");
+                String line = scanner.nextLine();
+                switch (line.toLowerCase().charAt(0)) {
+                    case 'q' -> promotion = PieceType.QUEEN;
+                    case 'k' -> promotion = PieceType.KNIGHT;
+                    case 'r' -> promotion = PieceType.ROOK;
+                    case 'b' -> promotion = PieceType.BISHOP;
+                    default -> System.out.println("Unknown piece type. Please enter the first letter of your desired promotion piece.");
+                }
+            }
+        }
         try {
-            server.move(stringToPos(from), stringToPos(to));
+            server.move(stringToPos(from), stringToPos(to), promotion);
         } catch (HTTPException e) {
             System.out.println(e.getMessage());
         }
@@ -371,7 +391,7 @@ public class ChessClient {
         for (char c : pos.toCharArray()) {
             if (Character.isDigit(c)) {
                 row = Character.getNumericValue(c);
-            } else if (c >= 'a' && c <= 'g') {
+            } else if (c >= 'a' && c <= 'h') {
                 column = c - 'a' + 1;
             }
         }
