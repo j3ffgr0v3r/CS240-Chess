@@ -116,9 +116,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ChessGame endedGame = gameService.getGame(gameID).game();
             endedGame.endGame();
             gameService.updateGame(gameID, endedGame);
-
-            LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
-            connections.broadcast(null, gameUpdate);
         } catch (BadRequestException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
             connections.broadcast(null, errorMessage);
