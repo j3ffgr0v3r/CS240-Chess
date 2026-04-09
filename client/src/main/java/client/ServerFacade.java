@@ -65,6 +65,7 @@ public class ServerFacade {
     public void joinGame(int gameID, String team) throws HTTPException {
         JoinGameRequest request = new JoinGameRequest(authToken, team, gameID);
         communicator.put(request, "/game", authToken, null);
+        webSocketFacade.connect(gameID);
     }
 
     public void observeGame(int gameID) throws HTTPException {
