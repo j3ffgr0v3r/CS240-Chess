@@ -78,11 +78,11 @@ public class GameService extends Service {
 
         GameData updatedGame = game;
 
-        if (game.whiteUsername().equals(username)) {
-            updatedGame = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
+        if (game.whiteUsername() == null ? username == null : game.whiteUsername().equals(username)) {
+            updatedGame = new GameData(updatedGame.gameID(), null, updatedGame.blackUsername(), updatedGame.gameName(), updatedGame.game());
         }
-        if (game.blackUsername().equals(username)) {
-            updatedGame = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
+        if (game.blackUsername() == null ? username == null : game.blackUsername().equals(username)) {
+            updatedGame = new GameData(updatedGame.gameID(), updatedGame.whiteUsername(), null, updatedGame.gameName(), updatedGame.game());
         }
 
         gameDAO.setGame(updatedGame);
@@ -102,7 +102,7 @@ public class GameService extends Service {
         gameDAO.setGame(new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame));
     }
 
-    private void updateGame(int gameID, ChessGame update) throws DataAccessException {
+    public void updateGame(int gameID, ChessGame update) throws DataAccessException {
         GameData game = gameDAO.getGame(gameID);
     
         gameDAO.setGame(new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), update));

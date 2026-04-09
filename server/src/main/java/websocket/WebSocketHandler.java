@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.api.Session;
 
 import com.google.gson.Gson;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import dataaccess.DataAccessException;
@@ -54,7 +55,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     makeMove(userGameCommand.getGameID(), username, makeMoveCommand.getMove());
                 } 
                 case LEAVE -> leave(userGameCommand.getGameID(), username, ctx.session);
-                case RESIGN -> resign(username, ctx.session);
+                case RESIGN -> resign(userGameCommand.getGameID(), username);
             }
         } catch (IOException | DataAccessException ex) {
             ex.printStackTrace();
@@ -88,10 +89,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void resign(String playerName, Session session) throws IOException {
-        String message = String.format("%s has resigned from the game", playerName);
-        NotificationMessage serverMessage = new NotificationMessage(message);
-        connections.broadcast(session, serverMessage);
+    private void resign(int gameID, String playerName) throws IOException {
+        try {
+            String message = String.format("%s has resigned from the game.", playerName);
+            NotificationMessage serverMessage = new NotificationMessage(message);
+            connections.broadcast(null, serverMessage);
+
+            ChessGame endedGame = gameService.getGame(gameID).game();
+            endedGame.endGame();
+            gameService.updateGame(gameID, endedGame);
+
+            LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
+            connections.broadcast(null, gameUpdate);
+        } catch (DataAccessException ex) {
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.broadcast(null, errorMessage);
+        }
     }
 
     public void makeMove(int gameID, String playerName, ChessMove move) throws IOException {

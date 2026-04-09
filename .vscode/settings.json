@@ -1,7 +1,8 @@
 {
     "cSpell.words": [
-        "dataaccess",
-        "Queenside"
+      "dataaccess",
+      "GAMEOVER",
+      "Queenside"
     ],
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.format.settings.url": "eclipse-formatter.xml",

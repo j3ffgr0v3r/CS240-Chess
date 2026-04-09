@@ -60,7 +60,7 @@ public class ChessGame implements Cloneable {
      * Enum identifying the 2 possible teams in a chess game
      */
     public enum TeamColor {
-        WHITE, BLACK
+        WHITE, BLACK, GAMEOVER
     }
 
     /**
@@ -108,6 +108,9 @@ public class ChessGame implements Cloneable {
         ChessPosition startPosition = move.getStartPosition();
         ChessPiece piece = board.getPiece(startPosition);
 
+        if (teamTurn == TeamColor.GAMEOVER) {
+            throw new InvalidMoveException("The game is over! No more moves can be made.");
+        }
         if (piece == null) {
             throw new InvalidMoveException("There is no piece there...");
         }
@@ -162,6 +165,15 @@ public class ChessGame implements Cloneable {
         }
 
         teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+
+        // Ends game if in check-mate or stale-mate
+        if (isInCheckmate(teamTurn) || isInStalemate(teamTurn)) {
+            endGame();
+        }
+    }
+
+    public void endGame() {
+        teamTurn = TeamColor.GAMEOVER;
     }
 
     /**
