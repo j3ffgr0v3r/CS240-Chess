@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import client.ServerCommunicationFailure;
 import client.ServerFacade;
 import model.GameData;
@@ -54,8 +55,17 @@ public class ChessClient {
             new MenuOption("quit - quit the program", "If you're done playing chess, use this command to close this program.", (params) -> quit()),
             new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()));
 
-    private final List<MenuOption> gameplayMenu = List.of(new MenuOption("leave - leave this game",
-            "Stop participating in this game and return to the game selection menu.", (params) -> leaveGame()));
+    private final List<MenuOption> gameplayMenu = List.of(
+            new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()),
+            new MenuOption("redraw - manually redraw the chess board", "Use this command to manually refresh the view of the chess board.",
+                    (params) -> redraw()),
+            new MenuOption("leave - leave this game", "Stop participating in this game and return to the game selection menu.",
+                    (params) -> leaveGame()),
+            new MenuOption("move (from) (to) - move a chess piece", "Use this command to move one of your chess pieces on your turn.",
+                    (params) -> move(params[1], params[2])),
+            new MenuOption("resign - give up", "Use this command to surrender this game to your opponent.", (params) -> resign()),
+            new MenuOption("highlight (position) - show legal moves for given piece",
+                    "Use this command to see the available moves for the piece at the given location.", (params) -> highlight(params[1])));
 
     private final Map<UIState, List<MenuOption>> stateMenuOptions = Map.of(
             UIState.PRELOGIN, preLoginMenu,
@@ -132,6 +142,28 @@ public class ChessClient {
                     && !Arrays.asList(arg.substring(1, arg.length() - 1).split("\\|")).contains(args[counter].toUpperCase())) {
                 throw new IllegalArgumentException(String.format("Error: Positional argument '%s' is not valid. Command argument format: %s",
                         args[counter], command.usage().split("-")[0]));
+            } else if (arg.charAt(0) == '(') {
+                int digitCount = 0;
+                int charAGCount = 0;
+                boolean illegalChar = false;
+
+                for (char c : args[counter].toCharArray()) {
+                    if (Character.isDigit(c) && Character.getNumericValue(c) >= 1 && Character.getNumericValue(c) <= 8) {
+                        digitCount++;
+                    } else if (c >= 'a' && c <= 'g') {
+                        charAGCount++;
+                    } else {
+                        illegalChar = true;
+                    }
+                    // Early exit if more than one is found
+                    if (digitCount > 1 || charAGCount > 1 || illegalChar) {
+                        break;
+                    }
+                }
+                if (digitCount != 1 || charAGCount != 1 || illegalChar) {
+                    throw new IllegalArgumentException(String.format("Error: Positional argument '%s' is not valid. Command argument format: %s",
+                            args[counter], command.usage().split("-")[0]));
+                }
             }
             counter++;
         }
@@ -148,7 +180,7 @@ public class ChessClient {
         System.out.println("""
                 Welcome to Chess! Below are the possible commands you can enter to begin playing, followed by a brief description of what they do. \
                 Simply enter a command keyword, followed by the acceptable parameters.\n Parameters surrounded by <> accept any input, \
-                {} take only numbers, and [] accept only the options listed within.\n""");
+                {} take only numbers, [] accept only the options listed within, and () take chess board coordinates (such as 'a8').\n""");
         for (final MenuOption option : stateMenuOptions.get(uiState)) {
             System.out.println(option.usage.split("\\s+")[0] + " - " + option.description);
         }
@@ -245,6 +277,51 @@ public class ChessClient {
     }
 
     private void leaveGame() {
-        uiState = UIState.POSTLOGIN;
+        try {
+            server.leaveGame();
+            uiState = UIState.POSTLOGIN;
+        } catch (HTTPException e) {
+            System.out.println(e.getMessage());
+        }
     }
+
+    private void redraw() {
+
+    }
+
+    private void move(String from, String to) {
+        try {
+            server.move(stringToPos(from), stringToPos(to));
+        } catch (HTTPException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void resign() {
+        try {
+            server.resign();
+        } catch (HTTPException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void highlight(String piece) {
+
+    }
+
+    private ChessPosition stringToPos(String pos) {
+        int column = 0;
+        int row = 0;
+
+        for (char c : pos.toCharArray()) {
+            if (Character.isDigit(c)) {
+                row = Character.getNumericValue(c);
+            } else if (c >= 'a' && c <= 'g') {
+                column = c - 'a' + 1;
+            }
+        }
+
+        return new ChessPosition(row, column);
+    }
+
 }

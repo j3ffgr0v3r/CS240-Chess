@@ -25,6 +25,7 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     NotificationHandler notificationHandler;
+    int gameID;
 
     private final Supplier<String> authToken;
 
@@ -60,18 +61,20 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException ex) {
             throw new HTTPException(500, ex.getMessage());
         }
+        this.gameID = gameID;
     }
 
-    public void leave(int gameID) throws HTTPException {
+    public void leave() throws HTTPException {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken.get(), gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new HTTPException(500, ex.getMessage());
         }
+        this.gameID = 0;
     }
 
-    public void resign(int gameID) throws HTTPException {
+    public void resign() throws HTTPException {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken.get(), gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
@@ -80,7 +83,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void makeMove(int gameID, ChessMove move) throws HTTPException {
+    public void makeMove(ChessMove move) throws HTTPException {
         try {
             var action = new MakeMoveCommand(move, authToken.get(), gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
