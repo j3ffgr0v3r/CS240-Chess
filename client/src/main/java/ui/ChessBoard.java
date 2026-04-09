@@ -27,24 +27,24 @@ import static ui.EscapeSequences.WHITE_QUEEN;
 import static ui.EscapeSequences.WHITE_ROOK;
 
 public final class ChessBoard {
-    private chess.ChessBoard board;
+    private chess.ChessGame game;
     ChessGame.TeamColor side;
 
     private final String borderBGColor = SET_BG_COLOR_BLUE;
     private final String[] header = { borderBGColor + EMPTY, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY + RESET_BG_COLOR };
 
-    public ChessBoard(chess.ChessBoard board, ChessGame.TeamColor side) {
-        updateGame(board);
+    public ChessBoard(chess.ChessGame game, ChessGame.TeamColor side) {
+        updateGame(game);
         this.side = side;
     }
 
-    public void updateGame(chess.ChessBoard board) {
-        this.board = board;
+    public void updateGame(chess.ChessGame update) {
+        this.game = update;
     }
 
     @Override
     public String toString() {
-        Iterator<ChessPiece> pieces = board.iterator();
+        Iterator<ChessPiece> pieces = game.getBoard().iterator();
         String[][] boardDisplay = new String[10][10];
 
         boardDisplay[0] = header.clone();

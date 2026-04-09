@@ -3,6 +3,8 @@ package service;
 import java.util.Random;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.DataAccessException;
 import dataaccess.auth.AuthDAO;
 import dataaccess.game.GameDAO;
@@ -69,6 +71,41 @@ public class GameService extends Service {
 
         gameDAO.setGame(updatedGame);
         return true;
+    }
+
+    public void leaveGame(int gameID, String username) throws DataAccessException  {
+        GameData game = gameDAO.getGame(gameID);
+
+        GameData updatedGame = game;
+
+        if (game.whiteUsername().equals(username)) {
+            updatedGame = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
+        }
+        if (game.blackUsername().equals(username)) {
+            updatedGame = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
+        }
+
+        gameDAO.setGame(updatedGame);
+    }
+
+    public GameData getGame(int gameID) throws DataAccessException {
+        return gameDAO.getGame(gameID);
+    }
+
+    public void makeMove(int gameID, ChessMove move) throws InvalidMoveException, DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+
+        ChessGame chessGame = game.game();
+
+        chessGame.makeMove(move);
+    
+        gameDAO.setGame(new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame));
+    }
+
+    private void updateGame(int gameID, ChessGame update) throws DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+    
+        gameDAO.setGame(new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), update));
     }
 
     public void clear() throws DataAccessException {

@@ -35,17 +35,13 @@ public class ServerFacadeTest {
 
     @BeforeEach
     void clearDatabase() {
-        try {
-            facade = new ServerFacade("http://localhost:" + port);
-        } catch (ServerCommunicationFailure e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        facade = new ServerFacade("http://localhost:" + port);
         try {
             facade.clearDatabase();
         } catch (HTTPException e) {
             throw new RuntimeException(e.getMessage());
         }
-        
+
     }
 
     @Test
@@ -55,7 +51,7 @@ public class ServerFacadeTest {
         } catch (HTTPException e) {
             throw new RuntimeException(e.getMessage());
         }
-        
+
         assertDoesNotThrow(() -> facade.createGame("newGame"));
     }
 
@@ -130,7 +126,7 @@ public class ServerFacadeTest {
         }
         for (int i = 0; i < 10; i++) {
             assertDoesNotThrow(() -> facade.logout());
-        }   
+        }
     }
 
     @Test
@@ -142,7 +138,7 @@ public class ServerFacadeTest {
         } catch (HTTPException e) {
             throw new RuntimeException(e.getMessage());
         }
-        assertDoesNotThrow(() -> facade.joinGame(gameID, "WHITE"));
+        assertDoesNotThrow(() -> facade.joinGame(gameID, "WHITE", null));
     }
 
     @Test
@@ -152,7 +148,7 @@ public class ServerFacadeTest {
         } catch (HTTPException e) {
             throw new RuntimeException(e.getMessage());
         }
-        HTTPException exception = assertThrows(HTTPException.class, () -> facade.joinGame(0, "BLACK"));
+        HTTPException exception = assertThrows(HTTPException.class, () -> facade.joinGame(0, "BLACK", null));
         assertTrue(exception.getMessage().toLowerCase().contains("bad request"));
     }
 
@@ -183,19 +179,19 @@ public class ServerFacadeTest {
     void testClearDatabaseRepeatedly() {
         for (int i = 0; i < 10; i++) {
             assertDoesNotThrow(() -> facade.clearDatabase());
-        }   
+        }
     }
 
     @Test
     void testObserveGame() {
-        assertDoesNotThrow(() -> facade.observeGame(0));
+        assertDoesNotThrow(() -> facade.observeGame(0, null));
     }
 
     @Test
     void testObserveGameRepeatedly() {
         for (int i = 0; i < 10; i++) {
-            assertDoesNotThrow(() -> facade.observeGame(0));
-        }  
+            assertDoesNotThrow(() -> facade.observeGame(0, null));
+        }
     }
-    
+
 }

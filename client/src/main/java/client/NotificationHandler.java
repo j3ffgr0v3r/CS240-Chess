@@ -3,26 +3,46 @@ package client;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+
+import ui.ChessBoard;
 import static ui.EscapeSequences.RESET_TEXT_COLOR;
+import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 public class NotificationHandler {
 
     List<String> messages = new ArrayList<>(8);
 
-    void notify(NotificationMessage notification) {
+    ui.ChessBoard board;
+
+    public NotificationHandler(ChessBoard board) {
+        this.board = board;
+    }
+
+    void notify(String message) {
+        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+        switch (serverMessage.getServerMessageType()) {
+                case NOTIFICATION -> notification(new Gson().fromJson(message, NotificationMessage.class));
+                case ERROR -> error(new Gson().fromJson(message, ErrorMessage.class));
+                case LOAD_GAME -> loadGame(new Gson().fromJson(message, LoadGameMessage.class));
+            }
+    }
+
+    void notification(NotificationMessage notification) {
         addMessage(String.format("%s%s%s", SET_TEXT_COLOR_YELLOW, notification.getMessage(), RESET_TEXT_COLOR));
     }
 
-    void notify(ErrorMessage notification) {
-        System.out.println(notification.getErrorMessage());
+    void error(ErrorMessage errorMessage) {
+        System.out.println(String.format("%s%s%s", SET_TEXT_COLOR_RED, errorMessage.getErrorMessage(), RESET_TEXT_COLOR));
     }
 
-    void notify(LoadGameMessage notification) {
-        System.out.println(notification.getGame().toString());
+    void loadGame(LoadGameMessage message) {
+        board.updateGame(message.getGame());
     }
 
 

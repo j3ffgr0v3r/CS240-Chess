@@ -18,7 +18,6 @@ import jakarta.websocket.WebSocketContainer;
 import model.exceptions.HTTPException;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
-import websocket.messages.NotificationMessage;
 
 // Need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -43,18 +42,10 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    System.out.println("Received: " + message);
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    notificationHandler.notify(notification);
+                    // System.out.println("Received: " + message);
+                    notificationHandler.notify(message);
                 }
             });
-
-            // new MessageHandler.Whole<String>() {
-            //     @Override
-            //     public void onMessage(String message) {
-            //         System.out.println("Received: " + message);
-            //     }
-            // }
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new HTTPException(500, ex.getMessage());
         }
@@ -77,7 +68,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void leave() throws HTTPException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken.get(), gameID);
+            UserGameCommand action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken.get(), gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new HTTPException(500, ex.getMessage());
@@ -87,7 +78,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void resign() throws HTTPException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken.get(), gameID);
+            UserGameCommand action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken.get(), gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new HTTPException(500, ex.getMessage());
@@ -96,7 +87,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void makeMove(ChessMove move) throws HTTPException {
         try {
-            var action = new MakeMoveCommand(move, authToken.get(), gameID);
+            MakeMoveCommand action = new MakeMoveCommand(move, authToken.get(), gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new HTTPException(500, ex.getMessage());

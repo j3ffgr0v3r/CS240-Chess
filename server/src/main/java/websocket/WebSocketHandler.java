@@ -7,21 +7,34 @@ import org.eclipse.jetty.websocket.api.Session;
 import com.google.gson.Gson;
 
 import chess.ChessMove;
-import chess.ChessPosition;
+import chess.InvalidMoveException;
+import dataaccess.DataAccessException;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import service.GameService;
+import service.UserService;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
-
-
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+
+    private final UserService userService;
+    private final GameService gameService;
+
+    public WebSocketHandler(UserService userService, GameService gameService) {
+        super();
+        this.userService = userService;
+        this.gameService = gameService;
+    }
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -33,13 +46,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     public void handleMessage(WsMessageContext ctx) {
         try {
             UserGameCommand userGameCommand = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+            String username = userService.getUserFromAuth(userGameCommand.getAuthToken());
             switch (userGameCommand.getCommandType()) {
-                case CONNECT -> connect(userGameCommand.getAuthToken(), ctx.session);
-                case MAKE_MOVE -> makeMove(userGameCommand.getAuthToken(), new ChessMove(new ChessPosition(1, 1), new ChessPosition(1, 3), null));
-                case LEAVE -> leave(userGameCommand.getAuthToken(), ctx.session);
-                case RESIGN -> resign(userGameCommand.getAuthToken(), ctx.session);
+                case CONNECT -> connect(username, ctx.session);
+                case MAKE_MOVE -> {
+                    MakeMoveCommand makeMoveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
+                    makeMove(userGameCommand.getGameID(), username, makeMoveCommand.getMove());
+                } 
+                case LEAVE -> leave(userGameCommand.getGameID(), username, ctx.session);
+                case RESIGN -> resign(username, ctx.session);
             }
-        } catch (IOException ex) {
+        } catch (IOException | DataAccessException ex) {
             ex.printStackTrace();
         }
     }
@@ -56,11 +73,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(session, serverMessage);
     }
 
-    private void leave(String playerName, Session session) throws IOException {
+    private void leave(int gameID, String playerName, Session session) throws IOException {
         String message = String.format("%s has left the game", playerName);
         NotificationMessage serverMessage = new NotificationMessage(message);
         connections.broadcast(session, serverMessage);
         connections.remove(session);
+        try {
+            gameService.leaveGame(gameID, playerName);
+            LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
+            connections.broadcast(session, gameUpdate);
+        } catch (DataAccessException ex) {
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.broadcast(null, errorMessage);
+        }
     }
 
     private void resign(String playerName, Session session) throws IOException {
@@ -69,9 +94,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(session, serverMessage);
     }
 
-    public void makeMove(String playerName, ChessMove move) throws IOException {
-        String message = String.format("%s moved %s", playerName, move);
-        NotificationMessage serverMessage = new NotificationMessage(message);
-        connections.broadcast(null, serverMessage);
+    public void makeMove(int gameID, String playerName, ChessMove move) throws IOException {
+        try {
+            // Make sure player is not trying to move other players piece
+            gameService.makeMove(gameID, move);
+        
+            String message = String.format("%s moved %s", playerName, move);
+            NotificationMessage serverMessage = new NotificationMessage(message);
+            connections.broadcast(null, serverMessage);
+
+            LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
+            connections.broadcast(null, gameUpdate);
+        } catch (InvalidMoveException | DataAccessException ex) {
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.broadcast(null, errorMessage);
+        }
     }
 }

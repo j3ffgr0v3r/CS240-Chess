@@ -100,6 +100,9 @@ public class ChessClient {
                     System.out.println();
                 }
             }
+        } catch (IllegalStateException ex) {
+            System.err.println("Error: websocket connection lost...");
+            uiState = UIState.POSTLOGIN;
         }
     }
 
@@ -261,11 +264,11 @@ public class ChessClient {
         gameNumber -= 1;
         if (0 <= gameNumber && gameNumber < gameIDs.size()) {
             try {
-                notificationHandler = new NotificationHandler();
-                server.joinGame(gameIDs.get(gameNumber), team.toUpperCase(), notificationHandler);
-                chess.ChessBoard gameBoard = new chess.ChessBoard();
-                gameBoard.resetBoard();
+                chess.ChessGame gameBoard = new chess.ChessGame();
+                gameBoard.getBoard().resetBoard();
                 board = new ChessBoard(gameBoard, "BLACK".equals(team.toUpperCase()) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
+                notificationHandler = new NotificationHandler(board);
+                server.joinGame(gameIDs.get(gameNumber), team.toUpperCase(), notificationHandler);
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
                 System.out.println(e.getMessage());
@@ -279,11 +282,10 @@ public class ChessClient {
         gameNumber -= 1;
         if (0 <= gameNumber && gameNumber < gameIDs.size()) {
             try {
-                notificationHandler = new NotificationHandler();
-                server.observeGame(gameIDs.get(gameNumber), notificationHandler);
-                chess.ChessBoard gameBoard = new chess.ChessBoard();
-                gameBoard.resetBoard();
+                chess.ChessGame gameBoard = new chess.ChessGame();
+                gameBoard.getBoard().resetBoard();
                 board = new ChessBoard(gameBoard, ChessGame.TeamColor.WHITE);
+                server.observeGame(gameIDs.get(gameNumber), notificationHandler);
                 uiState = UIState.GAMEPLAY;
             } catch (HTTPException e) {
                 System.out.println(e.getMessage());
