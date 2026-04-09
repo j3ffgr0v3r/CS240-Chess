@@ -59,7 +59,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     makeMove(userGameCommand.getGameID(), username, makeMoveCommand.getMove(), ctx.session);
                 }
                 case LEAVE -> leave(userGameCommand.getGameID(), username, ctx.session);
-                case RESIGN -> resign(userGameCommand.getGameID(), username);
+                case RESIGN -> resign(userGameCommand.getGameID(), username, ctx.session);
             }
         } catch (UnauthorizedException | IOException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
@@ -107,8 +107,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void resign(int gameID, String playerName) throws IOException {
+    private void resign(int gameID, String playerName, Session session) throws IOException {
         try {
+            GameData game = gameService.getGame(gameID);
+            
+            if (game.game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER || (!game.blackUsername().equals(playerName) && !game.whiteUsername().equals(playerName))) {
+                throw new BadRequestException();
+            } 
+
             String message = String.format("%s has resigned from the game.", playerName);
             NotificationMessage serverMessage = new NotificationMessage(message);
             connections.broadcast(null, serverMessage);
@@ -118,7 +124,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameService.updateGame(gameID, endedGame);
         } catch (BadRequestException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
-            connections.broadcast(null, errorMessage);
+            connections.dm(session, errorMessage);
         }
     }
 
