@@ -59,7 +59,7 @@ public final class ChessBoard {
 
         List<ChessPosition> highlightedSquares = new ArrayList<>();
 
-        if (highlight) {
+        if (highlight && game.getBoard().getPiece(pos) != null) {
             highlightedSquares = game.validMoves(pos).stream().map(move -> move.getEndPosition()).collect(Collectors.toCollection(ArrayList::new));
         }
 

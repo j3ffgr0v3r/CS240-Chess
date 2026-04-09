@@ -345,11 +345,19 @@ public class ChessClient {
     }
 
     private void resign() {
-        try {
-            server.resign();
-        } catch (HTTPException e) {
-            System.out.println(e.getMessage());
+        System.out.println("Are you sure you wish to resign? This cannot be undone. (y/n)");
+        String line;
+        try (Scanner scanner = new Scanner(System.in)) {
+            line = scanner.nextLine();
         }
+        if (line.toLowerCase().charAt(0) == 'y') {
+            try {
+                server.resign();
+            } catch (HTTPException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
     }
 
     private void highlight(String pos) {
