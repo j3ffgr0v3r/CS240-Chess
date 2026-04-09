@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.websocket.api.Session;
 
+import com.google.gson.Gson;
+
 import websocket.messages.ServerMessage;
 
 public class ConnectionManager {
@@ -19,7 +21,7 @@ public class ConnectionManager {
     }
 
     public void broadcast(Session excludeSession, ServerMessage notification) throws IOException {
-        String msg = notification.toString();
+        String msg = new Gson().toJson(notification);
         for (Session c : connections.values()) {
             if (c.isOpen()) {
                 if (!c.equals(excludeSession)) {

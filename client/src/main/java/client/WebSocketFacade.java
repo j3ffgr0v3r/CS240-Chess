@@ -40,10 +40,21 @@ public class WebSocketFacade extends Endpoint {
             this.session = container.connectToServer(this, socketURI);
 
             // Set message handler
-            this.session.addMessageHandler((MessageHandler.Whole<String>) (String message) -> {
-                NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                notificationHandler.notify(notification);
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String message) {
+                    System.out.println("Received: " + message);
+                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
+                    notificationHandler.notify(notification);
+                }
             });
+
+            // new MessageHandler.Whole<String>() {
+            //     @Override
+            //     public void onMessage(String message) {
+            //         System.out.println("Received: " + message);
+            //     }
+            // }
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new HTTPException(500, ex.getMessage());
         }

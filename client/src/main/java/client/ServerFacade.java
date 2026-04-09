@@ -27,7 +27,7 @@ public class ServerFacade {
     public ServerFacade(String url) throws ServerCommunicationFailure {
         communicator = new ClientCommunicator(url);
         try {
-            webSocketFacade = new WebSocketFacade(url, this::getToken, null);
+            webSocketFacade = new WebSocketFacade(url, this::getToken, new NotificationHandler());
         } catch (HTTPException e) {
             throw new ServerCommunicationFailure();
         }
