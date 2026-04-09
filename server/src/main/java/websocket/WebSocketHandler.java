@@ -16,6 +16,8 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.exceptions.BadRequestException;
+import model.exceptions.UnauthorizedException;
 import service.GameService;
 import service.UserService;
 import websocket.commands.MakeMoveCommand;
@@ -52,13 +54,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> connect(userGameCommand.getGameID(), username, ctx.session);
                 case MAKE_MOVE -> {
                     MakeMoveCommand makeMoveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
-                    makeMove(userGameCommand.getGameID(), username, makeMoveCommand.getMove(),  ctx.session);
+                    makeMove(userGameCommand.getGameID(), username, makeMoveCommand.getMove(), ctx.session);
                 }
                 case LEAVE -> leave(userGameCommand.getGameID(), username, ctx.session);
                 case RESIGN -> resign(userGameCommand.getGameID(), username);
             }
-        } catch (IOException | DataAccessException ex) {
-            ex.printStackTrace();
+        } catch (UnauthorizedException | IOException | DataAccessException ex) {
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            try {
+                connections.dm(ctx.session, errorMessage);
+            } catch (IOException ex2) {
+                ex2.printStackTrace();
+            }
         }
     }
 
@@ -69,15 +76,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void connect(int gameID, String playerName, Session session) throws IOException {
         connections.add(session);
-        String message = String.format("%s has joined the game", playerName);
-        NotificationMessage serverMessage = new NotificationMessage(message);
-        connections.broadcast(session, serverMessage);
 
         LoadGameMessage gameUpdate;
         try {
             gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
             connections.dm(session, gameUpdate);
-        } catch (DataAccessException ex) {
+            String message = String.format("%s has joined the game", playerName);
+            NotificationMessage serverMessage = new NotificationMessage(message);
+            connections.broadcast(session, serverMessage);
+        } catch (BadRequestException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
             connections.dm(session, errorMessage);
         }
@@ -92,7 +99,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameService.leaveGame(gameID, playerName);
             LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
             connections.broadcast(session, gameUpdate);
-        } catch (DataAccessException ex) {
+        } catch (BadRequestException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
             connections.broadcast(null, errorMessage);
         }
@@ -110,7 +117,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
             connections.broadcast(null, gameUpdate);
-        } catch (DataAccessException ex) {
+        } catch (BadRequestException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
             connections.broadcast(null, errorMessage);
         }
@@ -127,7 +134,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             LoadGameMessage gameUpdate = new LoadGameMessage(gameService.getGame(gameID).game());
             connections.broadcast(null, gameUpdate);
-        } catch (InvalidMoveException | DataAccessException ex) {
+        } catch (BadRequestException | InvalidMoveException | DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
             connections.dm(session, errorMessage);
         }

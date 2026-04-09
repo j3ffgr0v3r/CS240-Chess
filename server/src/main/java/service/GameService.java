@@ -88,8 +88,12 @@ public class GameService extends Service {
         gameDAO.setGame(updatedGame);
     }
 
-    public GameData getGame(int gameID) throws DataAccessException {
-        return gameDAO.getGame(gameID);
+    public GameData getGame(int gameID) throws BadRequestException, DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            throw new BadRequestException();
+        }
+        return game;
     }
 
     public void makeMove(int gameID, ChessMove move) throws InvalidMoveException, DataAccessException {

@@ -75,8 +75,12 @@ public class UserService extends Service {
         authDAO.clear();
     }
 
-    public String getUserFromAuth(String authToken) throws DataAccessException {
-        return authDAO.getSession(authToken).username();
+    public String getUserFromAuth(String authToken) throws UnauthorizedException, DataAccessException {
+        AuthData authData = authDAO.getSession(authToken);
+        if (authData == null) {
+            throw new UnauthorizedException();
+        }
+        return authData.username();
     }
 
     private String createSession(String username) throws DataAccessException {
