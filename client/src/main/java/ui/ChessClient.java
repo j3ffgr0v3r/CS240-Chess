@@ -26,7 +26,7 @@ public class ChessClient {
     private final List<Integer> gameIDs = new ArrayList<>();
 
     private enum UIState {
-        QUIT, PRELOGIN, POSTLOGIN, GAMEPLAY
+        QUIT, PRELOGIN, POSTLOGIN, GAMEPLAY, OBSERVE
     }
 
     UIState uiState = UIState.PRELOGIN;
@@ -71,10 +71,20 @@ public class ChessClient {
             new MenuOption("highlight (position) - show legal moves for given piece",
                     "Use this command to see the available moves for the piece at the given location.", (params) -> highlight(params[1])));
 
+    private final List<MenuOption> observeMenu = List.of(
+            new MenuOption("help - see more information about this menu", "Use this command to see these command descriptions.", (params) -> help()),
+            new MenuOption("redraw - manually redraw the chess board", "Use this command to manually refresh the view of the chess board.",
+                    (params) -> redraw()),
+            new MenuOption("leave - leave this game", "Stop participating in this game and return to the game selection menu.",
+                    (params) -> leaveGame()),
+            new MenuOption("highlight (position) - show legal moves for given piece",
+                    "Use this command to see the available moves for the piece at the given location.", (params) -> highlight(params[1])));
+
     private final Map<UIState, List<MenuOption>> stateMenuOptions = Map.of(
             UIState.PRELOGIN, preLoginMenu,
             UIState.POSTLOGIN, postLoginMenu,
-            UIState.GAMEPLAY, gameplayMenu);
+            UIState.GAMEPLAY, gameplayMenu,
+            UIState.OBSERVE, observeMenu);
 
     public ChessClient(final String serverUrl) throws ServerCommunicationFailure {
         server = new ServerFacade(serverUrl);
@@ -113,7 +123,7 @@ public class ChessClient {
     }
 
     public void printMenu(boolean highlight, ChessPosition pos) {
-        if (uiState == UIState.GAMEPLAY) {
+        if (uiState == UIState.GAMEPLAY || uiState == UIState.OBSERVE) {
             printGame(highlight, pos);
         }
         for (final MenuOption option : stateMenuOptions.get(uiState)) {
@@ -132,7 +142,7 @@ public class ChessClient {
             System.out.print(gameBoard[i]);
             if (i >= 1 && i <= 8) {
                 System.out.print(" ".repeat(10));
-                System.out.print(notificationHandler.getNotification(abs(i-8)));
+                System.out.print(notificationHandler.getNotification(abs(i - 8)));
             }
             System.out.println();
         }
@@ -304,7 +314,7 @@ public class ChessClient {
                 board = new ChessBoard(gameBoard, ChessGame.TeamColor.WHITE);
                 notificationHandler = new NotificationHandler(this);
                 server.observeGame(gameIDs.get(gameNumber), notificationHandler);
-                uiState = UIState.GAMEPLAY;
+                uiState = UIState.OBSERVE;
             } catch (HTTPException e) {
                 System.out.println(e.getMessage());
             }
